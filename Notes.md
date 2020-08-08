@@ -3,7 +3,7 @@
 - According to Bjarne Stroustrup, the creator of C++, C++ is a programming language that is **primarily for applications** that are very demanding on **performance, energy consumption** and **speed**. If there are serious concerns about **reliability, performance** and **response time**, C++ becomes a good choice.
 - Each C++ program consists of two parts: the **preprocessor directives** and the **main function**.
   ```C++
-  # include <iostream>
+  #include <iostream>
 
   int main() {
     std::cout << "Hello world, I am ready for C++";
