@@ -45,7 +45,7 @@
   }
   ```
 - We use keyword `const` to define a constant: `const int weightGoal = 100;`.
-- C++ allows for enumerated constants. This means the programmer can create a new variable type and then assign a finite number of values to it. For example:
+- C++ allows for **enumerated constants**. This means the programmer can create a new variable type and then assign a finite number of values to it. For example:
   ```C++
   #include <iostream>
   
@@ -68,7 +68,26 @@
     return 0;
   }
   ```
+- Format Output:
+  ```C++
+  #include <iomanip>
 
+  std::cout<<"\n\nThe text without any formating\n";
+  std::cout<<"Ints"<<"Floats"<<"Doubles"<<"\n";
+  std::cout<<"\nThe text with setw(15)\n";
+  std::cout<<"Ints"<<std::setw(15)<<"Floats"<<std::setw(15)<<"Doubles"<<"\n";
+  std::cout<<"\n\nThe text with tabs\n";
+  std::cout<<"Ints\t"<<"Floats\t"<<"Doubles"<<"\n";
+  ```
+- File IO steps:
+  - Include the `<fstream>` library.
+  - Create a stream (input, output, both):
+    - Writing to a file: `ofstream myfile;`.
+    - Reading a file: `ifstream myfile;`.
+    - Reading and Writing a file: `fstream myfile;`.
+  - Open the file: `myfile.open("filename");`.
+  - Close the file: `myfile.close();`.
+  
 
 
 
