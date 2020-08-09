@@ -1,4 +1,4 @@
-# C++ Prerequisite
+# Udacity C++ For Programmers
 ## Basics
 - According to Bjarne Stroustrup, the creator of C++, C++ is a programming language that is **primarily for applications** that are very demanding on **performance, energy consumption** and **speed**. If there are serious concerns about **reliability, performance** and **response time**, C++ becomes a good choice.
 - Each C++ program consists of two parts: the **preprocessor directives** and the **main function**.
@@ -87,11 +87,105 @@
     - Reading and Writing a file: `fstream myfile;`.
   - Open the file: `myfile.open("filename");`.
   - Close the file: `myfile.close();`.
+  ```C++
+  #include <iostream>
+  #include <fstream>
+  #include <string>
+  using namespace std;
   
+  int main() {
+    string line;
+    //create an output stream to write to the file
+    //append the new lines to the end of the file
+    ofstream myfileI ("input.txt", ios::app);
+    if (myfileI.is_open()) {
+      myfileI<<"\n I am adding a line.\n";
+      myfileI<<"I am adding another line.\n";
+      myfileI.close();
+    } else cout<<"Unable to open file for writing";
+    
+    //create an input stream to read the file
+    ifstream myfileO ("input.txt");
+    //during the creation of ifstream, the file is opened.
+    //so we don't have to explicitly open the file.
+    if (myfileO.is_open()) {
+      while (getline(myfileO, line)) {
+        cout<<line<<"\n";
+      }
+    } else cout<<"Unable to open file for reading";
+    
+    return 0;
+  }
+  ```
+- User-created libraries can also be included in C++. Traditionally, these files are called **header files**, and they have an `.hpp` extension. Nonetheless, any extension will work.
+  - Header files contain information about how to do a task.
+  - The main program contains information about what to do.
+  - For example:
+    - `main.hpp`
+    ```C++
+    #include <iostream>
+    using namespace std;
+    ```
+    - `main.cpp`
+    ```C++
+    #include "main.hpp"
 
+    int main() {
+      cout<<"Hello, I use header files!";
+      return 0;
+    }
+    ```
+- User Input. Note that `std::cin` doesn't retrieve strings that have a space in them. It treats space as the end of the input. To read string input, we can use `std::getline` command, which retrieves characters from `std::cin` source and stores them in a variable. `std::getline` will retrieve all characters until the newline or "\n" is detected.
+  ```C++
+  #include <iostream>
+  #include <string>
+  
+  int main() {
+    int year = 0;
+    //print a message to the user
+    std::out<<"What year is your favourite? ";
+    
+    //get the user response and assign it the variable year
+    std::cin>>year;
+    
+    //output response to the user
+    std::cout<<"How interesting, your favourite year is "<<year<<"!\n";
+    
+    std::string userName;
+    std::cout<<"Tell me your nickname?: ";
+    std::getline(std::cin, userName);
+    std::cout<<"Hello "<<userName<"!\n";
+    
+    return 0;
+  }
+  ```
+- Stringstream:
+  ```C++
+   #include <iostream>
+   #include <string>
+   #include <sstream>
 
+   int main() {
+     std::string stringLength, stringWidth;
+     float length = 0;
+     float width = 0;
+     float area = 0;
 
-
+     std::cout<<"Enter the length of the room: ";
+     //get the length as a string
+     std::getline(std::cin, stringLength);
+     //convert to a float
+     std::stringstream(stringLength)>>length;
+     //get the width as a string
+     std::cout<<"Enter width: ";
+     std::getline(std::cin, stringWidth);
+     //convert to a float
+     std::stringstream(stringWidth)>>width;
+     area = length * width;
+     std::cout<<"\nThe area of the room is: "<<area<<std::endl;
+     return 0;
+   }
+  ```
 
 
 
