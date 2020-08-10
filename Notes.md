@@ -35,6 +35,22 @@
   ![25-q-hough-fourth-quiz-updated2](https://github.com/leovantoji/sdce/blob/master/images/25-q-hough-fourth-quiz-updated2.png)
   - A square in Image space to Hough space: Option C  
   ![26-hough-quiz](https://github.com/leovantoji/sdce/blob/master/images/26-hough-quiz.png)
+  - Nonetheless, the slope *m* is undefined when the line is vertical. Therefore, we need to use another parameter space: *ρ = xcosθ + ysinθ*. *ρ* (rho) is the distance of the line from the origin, and *θ* are the angle away from the horizontal.   
+  ![hough_space_polar](https://github.com/leovantoji/sdce/blob/master/images/hough_space_polar.png)
+- Implementing a Hough Transform on Edge Detected Image:
+  - [From Scratch](https://alyssaq.github.io/2014/understanding-hough-transform/).
+  - Using OpenCV function `HoughLinesP`.
+    ```python
+    lines = cv2.HoughLinesP(masked_edges, rho, theta, threshold, np.array([]), min_line_length, max_line_gap)
+    ```
+    - `mask_edges` are the outputs from `Canny` function.
+    - `lines` is an array containing end points *(x<sub>1</sub>, y<sub>1</sub>, x<sub>2</sub>, y<sub>2</sub>)* of all line segments detected by the transform operation. 
+    - `rho` and `theta` are specified in units of pixels and radians respectively. 
+    - The `threshold` parameter specifies the minimum number of votes (intersections in a given grid cell) a candidate line needs to have to make it to the output. 
+    - The empty `np.array([])` is just a placeholder. `
+    - `min_line_length` is the minimum length of a line (in pixels) that you will accept in the output.
+    - `max_line_gap` is the maximum distance (again, in pixels) between segments that you will allow to be connected into a single line.
+  
   
 
 
