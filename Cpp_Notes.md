@@ -187,7 +187,8 @@
    }
   ```
 
-
+## Compilation and Execution
+- **Compiling** is the **process of translating the code** that you have written **into machine code** that processors understand. Every program, regardless of the source language, needs to be compiled in order to execute. This is true even for scripting languages like Python or JavaScript. In these cases, the interpreter (or a similar system) is responsible for **compiling code on the fly** in a process known as **just-in-time compiling**. Unlike scripted languages, compiled languages treat compilation and execution as two distinct steps. Compiling a program leaves you with an executable (often called a "binary"), a non-human readable file with machine code that the processor can run.-
 
 
 
