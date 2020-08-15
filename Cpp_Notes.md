@@ -1,7 +1,7 @@
 # Udacity C++ For Programmers
 ## Basics
 - According to Bjarne Stroustrup, the creator of C++, C++ is a programming language that is **primarily for applications** that are very demanding on **performance, energy consumption** and **speed**. If there are serious concerns about **reliability, performance** and **response time**, C++ becomes a good choice.
-- Each C++ program consists of two parts: the **preprocessor directives** and the **main function**.
+- Each C++ program consists of two parts: the **preprocessor directives** and the **main function**.chủ yếu bác Lê ạ. Nên cái vụ dịch bệnh covid này nhất là đợt 2 tái xuất ở ĐN 
   ```C++
   #include <iostream>
 
@@ -201,11 +201,39 @@
   - Make sure names of folders and files do not have spaces in them.
   - To compile the program: `g++ filename.cpp -o executableName`.
   - To execute the program: `./executatbleName`.
+ 
+## Arithmetic Operations
+- When doing math operations, you may need to include `cmath` library, it contains a number of useful functions.
+- Some practice:
+  ```C++
+  #include <iostream>
+  #include <cmath>
   
+  int main() {
+    float cubeSide = 5.4;
+    float sphereRadius = 2.33;
+    float coneRadius = 7.65;
+    float coneHeight = 14;
+    
+    float volCube, volSphere, volCone = 0;
+    
+    volCube = std::pow(cubeSide, 3)
+    volSphere = (4/3.0)*M_PI*std::pow(sphereRadius, 3)
+    volCone = M_PI*std::pow(coneRadius, 2)*coneHeight/3.0
+    
+    std::cout<<"Volume of the cube: "<<volCube<<"\n";
+    std::cout<<"Volume of the sphere: "<<volSphere<<"\n";
+    std::cout<<"Volume of the cone: "<<volCone<<"\n";
+    
+    return 0;
+  }
+  ```
+- C++ is a language that requires variable types to be known at compile time. However, C++ does allow some implicit conversions. For example, an `int` can be assigned to a `float`, or an `int` can be treated as a `char`.
+- Prefix and Postfix examples are `++a` and `a++` respectively. The **difference** between prefix and postfix is subtle but crucial. 
+  - **Prefix operators** increment the value of the variable, then return the reference to the variable.
+  - **Postfix operators** create a copy of the variable, increment the value of the variable, then
+return a copy from **BEFORE** the increment.
 
-
-
-
-
-
+## Intro to Control Flow
+- 
 
