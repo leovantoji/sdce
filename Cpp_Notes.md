@@ -188,7 +188,20 @@
   ```
 
 ## Compilation and Execution
-- **Compiling** is the **process of translating the code** that you have written **into machine code** that processors understand. Every program, regardless of the source language, needs to be compiled in order to execute. This is true even for scripting languages like Python or JavaScript. In these cases, the interpreter (or a similar system) is responsible for **compiling code on the fly** in a process known as **just-in-time compiling**. Unlike scripted languages, compiled languages treat compilation and execution as two distinct steps. Compiling a program leaves you with an executable (often called a "binary"), a non-human readable file with machine code that the processor can run.-
+- **Compiling** is the **process of translating the code** that you have written **into machine code** that processors understand. Every program, regardless of the source language, needs to be compiled in order to execute. This is true even for scripting languages like Python or JavaScript. In these cases, the interpreter (or a similar system) is responsible for **compiling code on the fly** in a process known as **just-in-time compiling**. Unlike scripted languages, compiled languages treat compilation and execution as two distinct steps. Compiling a program leaves you with an executable (often called a "binary"), a non-human readable file with machine code that the processor can run.
+- Compiling source code, like a single `.cpp` file, results in something called an **object files**. An object file **contains machine code** but may **not be executable** in and of itself. Among other things, object files describe their own public APIs (usually called symbols) as well as references that need to be resolved from other object files. Depended upon object files might come from other source files within the same project or from external or system libraries. In order to be executable, object files need to be linked together.
+- **Linking** is the process of creating an executable by effectively combining object files. During the linking process, the linker resolves symbolic references between object files and outputs a self-contained binary with all the machine code needed to execute.
+- As an aside, linking is not required for all programs. Most operating systems allow **dynamic linking**, in which symbolic references point to libraries that are not compiled into the resulting binary. With dynamic linking, these references are resolved at runtime. An example of this is a program that depends on a system library. At runtime, the symbolic references of the program resolve to the symbols of the system library.
+- Pros and Cons of dynamic linking:
+  - That dynamically linked libraries are not linked within binaries keeps the overall file size down.
+  - If the libraries change at any point, the code will automatically link to the new version. This may lead to difficult and surprising bugs.
+- To compile in a terminal:
+  - Open a terminal window.
+  - Change the working directory to the directory of the program.
+  - Make sure names of folders and files do not have spaces in them.
+  - To compile the program: `g++ filename.cpp -o executableName`.
+  - To execute the program: `./executatbleName`.
+  
 
 
 
