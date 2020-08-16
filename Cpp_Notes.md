@@ -1,7 +1,7 @@
 # Udacity C++ For Programmers
 ## Basics
 - According to Bjarne Stroustrup, the creator of C++, C++ is a programming language that is **primarily for applications** that are very demanding on **performance, energy consumption** and **speed**. If there are serious concerns about **reliability, performance** and **response time**, C++ becomes a good choice.
-- Each C++ program consists of two parts: the **preprocessor directives** and the **main function**.chủ yếu bác Lê ạ. Nên cái vụ dịch bệnh covid này nhất là đợt 2 tái xuất ở ĐN 
+- Each C++ program consists of two parts: the **preprocessor directives** and the **main function**.
   ```C++
   #include <iostream>
 
@@ -317,7 +317,7 @@ return a copy from **BEFORE** the increment.
 
       std::cout<<"Sum: "<<sum<<"\n";
       std::cout<<"Avg: "<<(sum/5)<<"\n";
-
+break
       return 0;
   }  
   ```
@@ -354,9 +354,42 @@ return a copy from **BEFORE** the increment.
   ```
 
 ## Pointers
+- **Pointers**, which are addresses of variables, can be accessed in C++. A variable which stores the address of another variable is called a **pointer**.
+  ```C++
+  myvar = 25;
+  foo = &myvar; //foo stores the address of myvar
+  bar = myvar; //bar == 25
+  baz = *foo; //baz == 25. baz takes the value pointed to by foo
+  ```
+- Pointer type should match with the variable type.
+  ```C++
+  int a = 54;
+  int * pointerToA = &a;
+  ```
+- Example for Pointers:
+  ```C++
+  #include <iostream>
+  #include <string>
 
+  int main() {
+      int givenInt = 10;
+      std::cout<<givenInt<<" is stored at "<<&givenInt<<"\n";
 
+      float givenFloat = 5.5;
+      std::cout<<givenFloat<<" is stored at "<<&givenFloat<<"\n";
 
+      double givenDouble = 2.3;
+      std::cout<<givenDouble<<" is stored at "<<&givenDouble<<"\n";
 
+      char givenChar = 'a';
+      std::cout<<givenChar<<" is stored at "<<(void *)&givenChar<<"\n";
+
+      std::string givenString;
+      std::getline(std::cin, givenString);
+      std::cout<<givenString<<" is stored at "<<&givenString<<"\n";
+
+      return 0;
+  }
+  ```
 
 
