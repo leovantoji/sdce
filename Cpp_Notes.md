@@ -392,4 +392,161 @@ break
   }
   ```
 
+## Arrays
+- **Arrays** are included in the C++ programming language, just as they are in other languages. **In C++, it is not necessary to learn arrays**. **Vectors** are more powerful/versatile than arrays. 
+- C++ arrays can be declared as:
+  ```C++
+  //Method 1
+  variableType arrayName [] = {variables to be stored in the array};
+  
+  //Method 2
+  variableType arrayName[array size];
+  ```
+- Values in an array can be accessed by identifying the specific index.
+  ```C++
+  variableType arrayName [index number];
+  ```
+- Example for `array`:
+  ```C++
+  #include <iostream>
+  #include <stdio.h>
+
+  int main() {
+      int userInput[40];
+      for(int i=0; i<40; i++) {
+          scanf("%d", &userInput[i]);
+      }
+
+      for(int i=0; i<40; i++) {
+          std::cout<<userInput[i]<<" ";
+      }
+
+      std::cout<<"\n";
+
+      for(int i=39; i>=0; i--) {
+          std::cout<<userInput[i]<<" ";
+      }
+
+      std::cout<<"\n";
+
+      for(int i=0; i<39; i++) {
+          for(int j=i+1; j<40; j++) {
+              if(userInput[i] > userInput[j]) {
+                  int temp = userInput[j];
+                  userInput[j] = userInput[i];
+                  userInput[i] = temp;
+              }
+          }
+      }
+
+      for(int i=0; i<40; i++) {
+          std::cout<<userInput[i]<<" ";
+      }
+
+      return 0;
+  }
+  ```
+- C++ supports **multi-dimensional arrays**. C++ arrays can be of any dimension: 1 to `n`. They are initialised with the format:
+  ```C++
+  typeOfVariable arrayName[size of dim.1][size of dim.2] ... [size of dim.n];
+  
+  //Example
+  int array2D[2][3];
+  ```
+
+## Functions
+- C++ supports functions, in fact `main()` is nothing more than a special C++ function. All C++ functions except for the case of `main()` function must have:
+  - A declaration: this is a statement of how the function is to be called.
+  - A definition: this is the statement(s) of the task the function performs when called.
+- C++ functions can do the followings.
+  - Accept parameters, but they are not required.
+  - Return values, but a return value is not required.
+  - Modify parameters, if given explicit direction to do so.
+- Function syntax:
+  ```C++
+  retVariableType functionName(para1, para2, ..., paraN) {
+      statements(s);
+  }
+  ```
+- Function Example:
+  ```C++
+  #include <iostream>
+
+  void printMessage();
+
+  int main() {
+      printMessage();
+      return 0;
+  }
+
+  void printMessage() {
+      std::cout<<"Functions\n";
+  }
+  ```
+- The function declaration can be omitted in the header file. As long as the function is defined before it is used, the declaration is optional. It is often considered good practice to list the declarations at the top of the header file.
+- A method for effecting variables outside of their scope, is to pass by reference. **Passing by reference** refers to passing the **address of the variable** rather than the variable.
+- C++ **DOES NOT** allow arrays to be passed to functions. Nonetheless, there are 3 methods for passing an array by reference to a function:
+  - `void functionName(variableType *arrayName);`
+  - `void functionName(variableType arrayName[length of array]);`
+  - `void functionName(variableType arrayName[]);`
+- Example:
+```C++
+/*Goal: Learn to pass arrays to functions*/
+
+#include<iostream>
+#include<iomanip>
+
+//Pass the array as a pointer
+void arrayAsPointer(int *array, int size);
+//Pass the array as a sized array
+void arraySized(int array[3], int size);
+//Pass the array as an unsized array
+void arrayUnSized(int array[], int size);
+
+int main()
+{
+    const int size = 3;
+    int array[size] = {33,66,99};
+    //We are passing a pointer or reference to the array
+    //so we will not know the size of the array
+    //We have to pass the size to the function as well
+    arrayAsPointer(array, size);
+    arraySized(array, size);
+    arrayUnSized(array, size);
+    return 0;
+}
+
+void arrayAsPointer(int *array, int size)
+{
+    std::cout<<std::setw(5);
+    for(int i=0; i<size; i++) 
+        std::cout<<array[i]<<" ";
+    std::cout<<"\n";
+}
+
+void arraySized(int array[3], int size)
+{
+    std::cout<<std::setw(5);
+    for(int i=0; i<size; i++)
+        std::cout<<array[i]<<" ";
+    std::cout<<"\n";  
+}
+
+void arrayUnSized(int array[], int size)
+{
+    std::cout<<std::setw(5);
+    for(int i=0; i<size; i++)
+        std::cout<<array[i]<<" ";
+    std::cout<<"\n";  
+}
+```
+
+
+
+
+
+
+
+
+
 
