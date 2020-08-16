@@ -238,5 +238,74 @@ return a copy from **BEFORE** the increment.
 - C++ has several control flow options:
   - `if-else`, `jump`, `switch` statements.
   - `for`, `while` loops.
+- Example for `if-else-if` statement:
+  ```C++
+  #include <iostream>
+  
+  int main() {
+    int TARGET = 44;
+    int guess;
+    
+    std::cout<<"Guess a number between 0 and 100.\n";
+    std::cin>>guess;
+    std::cout<<"You guessed: "<<guess<<"\n";
+    
+    if (guess < TARGET) {
+      std::cout<<"Your guess is too low!\n";
+    } else if (guess > TARGET) {
+      std::cout<<"Your guess is too high!\n";
+    } else {
+      std::cout<<"Correct!\n";
+    }
+    
+    return 0;
+  }
+  ```
+- Example for `switch` statement:
+  ```C++
+  #include <iostream>
+
+  int main()
+  {
+      float in1, in2, answer;
+      char operation;
+
+      std::cout<<"Enter two numbers:\n";
+      std::cin>>in1;
+      std::cin>>in2;
+      std::cout<<"Enter the operation '+','-','*','/':\n";
+      std::cin>>operation;
+
+      std::cout<<"Your choice: "<<in1<<" "<<operation<<" "<<in2<<"\n";
+
+      switch (operation) {
+          case '+':
+              answer = in1 + in2;
+              break;
+          case '-':
+              answer = in1 - in2;
+              break;
+          case '*':
+              answer = in1 * in2;
+              break;
+          case '/':
+              answer = in1 / in2;
+              break;
+          default:
+          std::cout<<"Invalid Operation!\n";
+      }
+
+      std::cout<<in1<<operation<<in2<<" = "<<answer<<"\n";
+
+      return 0;
+  }
+  ```
+
+
+
+
+
+
+
 
 
