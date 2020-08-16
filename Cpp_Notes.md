@@ -300,9 +300,60 @@ return a copy from **BEFORE** the increment.
       return 0;
   }
   ```
+- Example for `for` loop:
+  ```C++
+  #include <iostream>
 
+  int main() {
+      float number;
+      float sum = 0;
 
+      std::cout<<"Enter 5 numbers: \n";
 
+      for (int i=0; i<5; i++) {
+          std::cin>>number;
+          sum += number;
+      }
+
+      std::cout<<"Sum: "<<sum<<"\n";
+      std::cout<<"Avg: "<<(sum/5)<<"\n";
+
+      return 0;
+  }  
+  ```
+- Example for `while` loop:
+  ```C++
+  #include <iostream>
+  #include <sstream>
+
+  int main()
+  {
+      //use 55 as the number to be guessed
+      int target = 55;
+      int guess = -1;
+      std::string answer;
+
+      do {
+          std::cout<<"Guess a number between 0 and 100: ";
+          std::cin>>guess;
+          if (guess == -1) {
+              break;
+          } else if (guess > target) {
+              answer = " is too high!";
+          } else if (guess < target) {
+              answer = " is too low!";
+          } else {
+              answer = " is correct!";
+          }
+
+          std::cout<<guess<<answer<<"\n";
+      } while ((guess != -1) && (guess != target));
+
+      return 0;
+  }
+  ```
+
+## Pointers
 
 
 
