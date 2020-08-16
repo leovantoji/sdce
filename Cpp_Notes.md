@@ -235,5 +235,8 @@
 return a copy from **BEFORE** the increment.
 
 ## Intro to Control Flow
-- 
+- C++ has several control flow options:
+  - `if-else`, `jump`, `switch` statements.
+  - `for`, `while` loops.
+
 
