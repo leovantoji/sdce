@@ -50,10 +50,24 @@
     - The empty `np.array([])` is just a placeholder. `
     - `min_line_length` is the minimum length of a line (in pixels) that you will accept in the output.
     - `max_line_gap` is the maximum distance (again, in pixels) between segments that you will allow to be connected into a single line.
-  
-  
 
-
+## Camera Calibration
+- **Image distortion** occurs when a camera looks at 3D objects in the real world and transforms them into a 2D image. This transformation isn't perfect because:
+  - Distortion can change the apparent size and shape of an object in an image.
+  - Distortion can cause an object's appearance to change depending on where it is in the field of view.
+  - Distortion can make objects appear closer or farther away than they actually are.
+- Thus, the first step in analysing camera image, is to **undo this distortion** so that you can get correct and useful information about them.  
+  ![distorted_images](https://github.com/leovantoji/sdce/blob/master/images/distorted_images.png)
+- Real cameras use **curved lenses** to form an image, and light rays often bend a little too much or too little at the edges of these lenses. This creates an effect that **distorts the edges of images**, so that **lines or objects appear more or less curved than they actually are**. This is called **radial distortion**, and it's the most common type of distortion.
+- Another distortion type called **tangential distortion**, occurs when a camera's lens is not aligned perfectly parallel to the imaging plane, where the camera film or sensor is. This makes an image **look tilted** so that some **objects appear farther away or closer than they actually are**.
+- There are 3 coefficients needed to correct for **radial distortion: k<sub>1</sub>, k<sub>2</sub>** and **k<sub>3</sub>**. *Note*: The distortion coefficient **k<sub>3</sub>** is required to accurately reflect *major* radial distortion (like in wide angle lenses). However, for minor radial distortion, which most regular camera lenses have, **k<sub>3</sub>** has a value close to or equal to 0 and is negligible. Thus, in OpenCV, you may choose to ignore this coefficient, and this is also the reason why **k<sub>3</sub>** apppears at the end of the distortion values array: `[k1, k2, p1, p2, k3]`.  
+  ![correct_radial_distortion](https://github.com/leovantoji/sdce/blob/master/images/correct_radial_distortion.png)
+- Formula for radial distortion correction: 
+  - *x<sub>distorted</sub> = x<sub>ideal</sub>(1 + k<sub>1</sub>r<sup>2</sup> + k<sub>2</sub>r<sup>4</sup> + k<sub>3</sub>r<sup>6</sup>)*
+  - *y<sub>distorted</sub> = y<sub>ideal</sub>(1 + k<sub>1</sub>r<sup>2</sup> + k<sub>2</sub>r<sup>4</sup> + k<sub>3</sub>r<sup>6</sup>)*
+- Formula for tangential distortion correction:
+  - *x<sub>corrected</sub> = x + \[2p<sub>1</sub>xy + p<sub>2</sub>(r<sup>2</sup> + 2x<sup>2</sup>)\]*
+  - *y<sub>corrected</sub> = y + \[p<sub>1</sub>(r<sup>2</sup> + 2y<sup>2</sup>) + 2p<sub>2</sub>xy\]*
 
 
 
