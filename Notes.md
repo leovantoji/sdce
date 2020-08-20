@@ -74,7 +74,7 @@
   ![corners-found3](https://github.com/leovantoji/sdce/blob/master/images/corners-found3.jpg)  
 - Two main steps for camera calibration:
   - Use chessboard images to obtain image points (2D) and object points (3D).
-  - Use OpenCV functions `cv2.calibrateCamera()` and `cv2.undistort()` to compute the calibration and undistortion.
+  - Use OpenCV functions `cv2.calibrateCamera()` and `cv2.undistort()` to compute the calibration and undistortion.  
   ```python
   # codes from https://github.com/udacity/CarND-Camera-Calibration/blob/master/camera_calibration.ipynb
   
@@ -120,6 +120,7 @@
   cv2.imwrite('calibration_wide/test_undist.jpg', dst)
   ```  
   [orig-and-undist](https://github.com/leovantoji/sdce/blob/master/images/orig-and-undist.png)
+  
 - Self-driving cars need to be told the correct steering angle to turn left or right. This angle can be calculated based on the speed and dynamics of the car and the curvature of the lane. One way to **calculate the curvature of a lane line**, is to fit a 2<sup>nd</sup> degree polynomial to that line, and from this, you can easily extract useful information. For a lane line that is close to vertical, you can fit a line using this formula: *f(y) = Ay<sup>2</sup> + By + C*.
   - *A*: the curvature of the lane line.
   - *B*: the heading or direction that the line is pointing.
