@@ -68,15 +68,61 @@
 - Formula for tangential distortion correction:
   - *x<sub>corrected</sub> = x + \[2p<sub>1</sub>xy + p<sub>2</sub>(r<sup>2</sup> + 2x<sup>2</sup>)\]*
   - *y<sub>corrected</sub> = y + \[p<sub>1</sub>(r<sup>2</sup> + 2y<sup>2</sup>) + 2p<sub>2</sub>xy\]*
-
-
-
-
-
-
-
-
-
+- **Pictures of known shapes** can help us **correct any distortion errors**. A **chessboard** is normally used to calibrate the camera because its **regular high contrast pattern** makes it easy to detect automatically. Therefore, multiple pictures of a chessboard against a flat surface can be used. OpenCV has 2 useful functions for this purpose.
+  - `findChessboardCorners()`: can automatically find corners in an image of a chessboard pattern.
+  - `drawChessboardCorners()`: can automatically draw corners in an image of a chessboard pattern.  
+  ![corners-found3](https://github.com/leovantoji/sdce/blob/master/images/corners-found3.jpg)  
+- Two main steps for camera calibration:
+  - Use chessboard images to obtain image points (2D) and object points (3D).
+  - Use OpenCV functions `cv2.calibrateCamera()` and `cv2.undistort()` to compute the calibration and undistortion.
+  ```python
+  # codes from https://github.com/udacity/CarND-Camera-Calibration/blob/master/camera_calibration.ipynb
+  
+  # prepare object points, like (0,0,0), (1,0,0), ..., (7,5,0)
+  nx, ny = 8, 6 # number of inside corners for each row and column (based on the image)
+  objp = np.zeros((ny*nx,3), np.float32)
+  objp[:,:2] = np.mgrid[0:nx,0:ny].T.reshape(-1,2)
+  
+  # arrays to store object and image points from all images
+  objpoints = [] # 3D points in real world space
+  imgpoints = [] # 2D points in image plane
+  
+  # make a list of calibration images
+  images = glob.glob('calibration_wide/GO*.jpg')
+  
+  # step through the list and search for chessboard corners
+  for _, fname in enumerate(images):
+    img = cv2.imread(fname)
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    
+    # find the chessboard corners
+    ret, corners = cv2.findChessboardCorners(gray, (nx, ny), None)
+    
+    # add object/image points if found
+    if (ret):
+      objpoints.append(objp)
+      imgpoints.append(corners)
+      
+      # draw and display the corners
+      cv2.drawChessboardCorners(img, (nx, ny), corners, ret)
+      cv2.imshow('img', img)
+      cv2.waitKey(500)
+      
+  cv2.destroyAllWindows()
+  
+  # test undistortion on an image
+  img = cv2.imread('calibration_wide/test_image.jpg')
+  
+  # perform camera calibration given object points and image points
+  ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, img.shape[1::-1], None, None)
+  
+  dst = cv2.undistort(img, mtx, dist, None, mtx)
+  cv2.imwrite('calibration_wide/test_undist.jpg', dst)
+  ```
+|Original Image|Undistorted Image|
+|:-:|:-:|
+|![orig-and-undist](https://github.com/leovantoji/sdce/blob/master/images/orig-and-undist.png)|![orig-and-undist2](https://github.com/leovantoji/sdce/blob/master/images/orig-and-undist2.png)|
+- 
 
 
 
