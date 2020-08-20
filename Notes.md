@@ -118,11 +118,32 @@
   
   dst = cv2.undistort(img, mtx, dist, None, mtx)
   cv2.imwrite('calibration_wide/test_undist.jpg', dst)
-  ```
-|Original Image|Undistorted Image|
-|:-:|:-:|
-|![orig-and-undist](https://github.com/leovantoji/sdce/blob/master/images/orig-and-undist.png)|![orig-and-undist2](https://github.com/leovantoji/sdce/blob/master/images/orig-and-undist2.png)|
-- 
+  ```  
+  [orig-and-undist](https://github.com/leovantoji/sdce/blob/master/images/orig-and-undist.png)
+- Self-driving cars need to be told the correct steering angle to turn left or right. This angle can be calculated based on the speed and dynamics of the car and the curvature of the lane. One way to **calculate the curvature of a lane line**, is to fit a 2<sup>nd</sup> degree polynomial to that line, and from this, you can easily extract useful information. For a lane line that is close to vertical, you can fit a line using this formula: *f(y) = Ay<sup>2</sup> + By + C*.
+  - *A*: the curvature of the lane line.
+  - *B*: the heading or direction that the line is pointing.
+  - *C*: the position of the line based on how far away it is from the very left of an image (*y = 0*).
+- In an image, **perspective** is the phenomenon where an object appears smaller the farther away it is from a particular viewpoint, and parallel lines appear to converge to a point. A **perspective transform** maps the points in a given image to **different, desired, image points** with a new perspective. A **bird's-eye view transform**, which allows us to view a lane from above, is extremely **useful for calculating the lane curvature**.  
+  [birds_eye_view_transform](https://github.com/leovantoji/sdce/blob/master/images/birds_eye_view_transform.png)
+- OpenCV's useful functions:
+  - Compute the perspective transform, M, given source and destination points (need 4 points):
+  `M = cv2.getPerspectiveTransform(src, dst)`
+  - Compute the inverse perspective transform:
+  `Minv = cv2.getPerspectiveTransform(dst, src)`
+  - Warp an image using the perspective transform, M:
+  `warped_img = cv2.warpPerspective(img, M, img_size, flags=cv2.INTER_LINEAR)`
+
+
+
+
+
+
+
+
+
+
+
 
 
 
