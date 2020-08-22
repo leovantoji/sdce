@@ -541,11 +541,74 @@ break
   }
   ```
 - Function Best Practices: When passing variables that are not going to be modified in the function, define the variable as a `const` so that it cannot be changed by the function. Example:
-```C++
-int doubleInput(const int input);
-```
+  ```C++
+  int doubleInput(const int input);
+  ```
 
 ## Classes
+- A **class** in C++ is a **user-defined data type**. It can have data and functions. All members of C++ classes are private by default. Thus, we need to **use functions to access the data in a class**. Functions that access and/or modify data values in classes are called **mutators**.
+- Let's look at an example of a *Student* class with a *name*, an *id number*, and a *graduation date*. There are `setDataValue` and `getDataValue` functions as well.
+  ```C++
+  #include <iostream>
+  using namespace std;
+  
+  class Student {
+      string name;
+      int id;
+      int gradDate;
+  
+    public:
+      void setName(string nameIn);
+      void setId(int idIn);
+      void setGradDate(int gradDateIn);
+      string getName();
+      int getId();
+      int getGradDate();
+      void print(); //print all data values in the class
+  };
+  
+  //setters
+  void Student::setName(string nameIn) {
+    name = nameIn;
+  }
+
+  void Student::setId(int idIn) {
+    id = idIn;
+  }
+
+  void Student::setGradDate(int gradDateIn) {
+    gradDate = gradDateIn;
+  }
+
+  //print
+  void Student::print() {
+    cout<<name<<" "<<id<<" "<<gradDate;
+  }
+
+  //getters
+  string Student::getName() {
+    return name;
+  }
+
+  int Student::getId() {
+    return id;
+  }
+
+  int Student::getGradDate() {
+    return gradDate;
+  }
+  ```
+- **C++ Convention** includes:
+  - Capitalise the first letter of the classname.
+  - Private members are listed first. If you list them after the `public` keyword, you will need to identify them by using the `private` keyword.
+  - Use `getVariableName` for accessing private variables and `setVariableName` for assigning values to private variables.
+  - It is conventional to put classes in a header file.
+
+
+
+
+
+
 
 
 
