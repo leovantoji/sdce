@@ -603,7 +603,51 @@ break
   - Private members are listed first. If you list them after the `public` keyword, you will need to identify them by using the `private` keyword.
   - Use `getVariableName` for accessing private variables and `setVariableName` for assigning values to private variables.
   - It is conventional to put classes in a header file.
+- A **constructor** is a special function that is executed whenever we create a new instance of the class. It is used to set initial values of data members of the class. **Constructors DO NOT return a value, including void**.
+- In addition to constructors, C++ also has **destructors**. Destructors are special class functions that are called whenever an object goes out of scope. Just like a constructor, a destructor is called automatically. **Destructors CANNOT return a value or accept parameters**. They must have the same name as the class. One of the more important tasks of a destructor is **releasing memory that was allocated by the class constructor and member functions**.
+- Example of constructor and destructor:
+  ```C++
+  #include <iostream>
+  using namespace std;
 
+  class Dog {
+      int license;
+
+    public:
+      //constructor
+      Dog(); 
+      Dog(int licenseIn);
+
+      //setter
+      void setLicense(int licenseIn);
+
+      //getter
+      int getLicense();
+
+      //destructor
+      ~Dog(); 
+  };
+
+  Dog::Dog() {
+    license = 0;
+  }
+
+  Dog::Dog(int licenseIn) {
+    license = licenseIn;
+  }
+
+  Dog::~Dog() {
+    cout<<"\nDeleting the dog";
+  }
+
+  void Dog::setLicense(int licenseIn) {
+      license = licenseIn;
+  }
+
+  int Dog::getLicense() {
+      return license;
+  }
+  ```
 
 
 
