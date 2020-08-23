@@ -664,7 +664,129 @@ break
   } 
   ```
 
+## Overloading
+- **Function overloading** allows us to use the same function name for different functions. As long as the argument list is different, the compiler will be able to choose the correct definition. Different argument list means either the variable type is different and/or the number of arguments is different. Example:
+  ```C++
+  #include <iostream>
 
+  class Compare {
+      public:
+          int findSmaller(int input1, int input2);
+          float findSmaller(float input1, float input2);
+          char findSmaller(char input1, char input2);
+          int findSmaller(int input1, int input2, int input3);
+          float findSmaller(float input1, float input2, float input3);
+          char findSmaller(char input1, char input2, char input3);
+          int findSmaller(int input[], int size);
+          float findSmaller(float input[], int size);
+          char findSmaller(char input[], int size);
+  };
+
+  int Compare::findSmaller(int input1, int input2) {
+      if(input1 < input2)
+          return input1;
+      return input2;
+  }
+
+  float Compare::findSmaller(float input1, float input2) {
+      if(input1 < input2)
+          return input1;
+      return input2;
+  }
+
+  char Compare::findSmaller(char input1, char input2) {
+      if(input1 < input2)
+          return input1;
+      return input2;
+  }
+
+  int Compare::findSmaller(int input1, int input2, int input3) {
+      int min = input1;
+
+      if(input2 < min) {
+          min = input2;
+      }
+
+      if(input3 < min) {
+          min = input3;
+      }
+
+      return min;
+  }
+
+  float Compare::findSmaller(float input1, float input2, float input3) {
+      float min = input1;
+
+      if(input2 < min) {
+          min = input2;
+      }
+
+      if(input3 < min) {
+          min = input3;
+      }
+
+      return min;
+  }
+
+  char Compare::findSmaller(char input1, char input2, char input3) {
+      char min = input1;
+
+      if(input2 < min) {
+          min = input2;
+      }
+
+      if(input3 < min) {
+          min = input3;
+      }
+
+      return min;
+  }
+
+  int Compare::findSmaller(int input[], int size) {
+      if(size == 1) {
+          return input[size-1];
+      } else {
+          int min = input[0];
+          for(int i=1; i<size; i++) {
+              if(input[i] < min) {
+                  min = input[i];
+              }
+          }
+
+          return min;
+      }
+  }
+
+  float Compare::findSmaller(float input[], int size) {
+      if(size == 1) {
+          return input[size-1];
+      } else {
+          float min = input[0];
+          for(int i=1; i<size; i++) {
+              if(input[i] < min) {
+                  min = input[i];
+              }
+          }
+
+          return min;
+      }
+  }
+
+  char Compare::findSmaller(char input[], int size) {
+      if(size == 1) {
+          return input[size-1];
+      } else {
+          char min = input[0];
+          for(int i=1; i<size; i++) {
+              if(input[i] < min) {
+                  min = input[i];
+              }
+          }
+
+          return min;
+      }
+  }
+  ```
 
 
 
