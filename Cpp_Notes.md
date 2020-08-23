@@ -648,7 +648,21 @@ break
       return license;
   }
   ```
+- C++ has a pointer called `this`. `this` returns its own address. There are few cases where `this` might be necessary, but often using `this` is considered a stylistic preference. For example:
+  ```C++
+  //Use 'this' to compare areas
+  //The class functions
+  int compareWithThis(Shape shape) {
+    return this->Area() > shape.Area();
+  }
+  
+  //Using the class function in a program
+  //In this case sh1.Area() is being compared to sh2.Area()
 
+  if(sh1.compareWithThis(sh2)) {
+    std::cout<<"\nShape2 is smaller than Shape1"<<std::endl;
+  } 
+  ```
 
 
 
