@@ -787,6 +787,236 @@ break
       }
   }
   ```
+- Overloading Constructors:
+  ```C++
+  #include<iostream>
+  #include<string>
+  using namespace std;
+
+  class Dog {
+      private:
+          string name;
+          int licenseNumber;
+
+      public:
+          Dog();
+          Dog(string name);
+          Dog(int licenseNumber);
+          Dog(string name, int licenseNumber);
+          string getName();
+          int getLicense();
+  };
+
+  Dog::Dog() {
+      this->name = "NA";
+      this->licenseNumber = 0;
+  }
+
+  Dog::Dog(string name) {
+      this->name = name;
+      this->licenseNumber = 0;
+  }
+
+  Dog::Dog(int licenseNumber) {
+      this->name = "NA";
+      this->licenseNumber = licenseNumber;
+  }
+
+  Dog::Dog(string name, int licenseNumber) {
+      this->name = name;
+      this->licenseNumber = licenseNumber;
+  }
+
+  string Dog::getName() {
+      return this->name;
+  }
+
+  int Dog::getLicense() {
+      return this->licenseNumber;
+  }
+  ```
+- Overloading operators is useful when using user-defined objects. Below is an example of a function that overloads that `+` sign.
+  ```C++
+  #include <iostream>
+  using namespace std;
+
+  class Shape {
+      private:
+          int length; // Length of a box
+          int width;
+
+      public:
+          // Constructor definition
+          Shape(int l = 2, int w = 2) {
+              this->length = l;
+              this->width = w;
+          }
+
+      double Area() {
+          return this->length * this->width;
+      }
+
+      int getLength() {
+          return this->length;
+      }
+
+      int getWidth() {
+          return this->width;
+      }
+
+      int operator + (Shape shape) {
+          return (this->length + shape.getLength())*(this->width + shape.getWidth());
+      }
+  };
+  ```
+- More on [Overloading](https://www.tutorialspoint.com/cplusplus/cpp_overloading.htm).
+
+## Templates
+- In the Overloading section, we saw how overloading can be used to create a function that is fairly generic. Unfortunately, we still have to write a function for each variable type. **Templates** allow us to create **generic functions** that are only written once.
+- Below is the syntax for templates for functions.
+  - Function declaration:
+  ```C++
+  template <typename T>  //tell the compiler we are using a template
+
+  //T represents the variable type. Since we want it to be for any type, we 
+  //use T
+  T  functionName (T parameter1,T parameter2, ...);
+  ```
+  - Function Definition:
+  ```C++
+  template <typename T>
+  T functionName (T  parameter1,T  parameter2,...) {
+      function statements;
+  }
+  ```
+- Below is an example where **input parameters and return variables are of different type**.
+  ```C++
+  #include <iostream>
+  using namespace std;
+
+  //function declaration
+  template <typename T, typename U>
+  T getBigger(T input1, U input2);
+
+  int main() {
+      int a = 5;
+      float b = 6.334;
+      int bigger;
+      //Between 5 and 6.334, 6 is bigger.
+      cout<<"Between "<<a<<" and "<<b<<", "<<getBigger(a,b)<<" is bigger.\n";
+      //Between 5 and 6.334, 6.334 is bigger.
+      cout<<"Between "<<a<<" and "<<b<<", "<<getBigger(b,a)<<" is bigger.\n";    
+      return 0;
+  }
+
+  //function definition
+  template <typename T, typename U>
+  T getBigger(T input1, U input2) {
+      if(input1 > input2)
+          return input1;
+      return input2;
+  }
+  ```
+- In C++, we can create **generic classes** as well as functions. We use the same template type placeholder as we did for functions. If the class is going to accept **strings**, we need to include the `using namespace` compiler director, or it will not recognise the string variable.
+  ```C++
+  //main.hpp
+  /*header file*/
+
+  /*header file*/
+  #include <iostream>
+  using namespace std;
+
+  template <class T>
+  class Multiplier {
+          T m1, m2, product;
+      public:
+          T getM1();
+          T getM2();
+          T getProduct();
+          void setM1(T input);
+          void setM2(T input);
+          void setProduct();
+          void printEquation();
+  };
+
+  //getter
+  template <class T>
+  T Multiplier<T>::getM1() {
+      return this->m1;
+  }
+
+  template <class T>
+  T Multiplier<T>::getM2() {
+      return this->m2;
+  }
+
+  template <class T>
+  T Multiplier<T>::getProduct() {
+      return this->product;
+  }
+
+  //setter
+  template <class T>
+  void Multiplier<T>::setM1(T input) {
+      this->m1 = input;
+  }
+
+  template <class T>
+  void Multiplier<T>::setM2(T input) {
+      this->m2 = input;
+  }
+
+  template <class T>
+  void Multiplier<T>::setProduct() {
+      this->product = this->getM1() * this->getM2();
+  }
+
+  template <class T>
+  void Multiplier<T>::printEquation() {
+      cout<<this->getM1()<<"*"<<this->getM2()<<"="<<this->getProduct();
+  }
+
+  //main.cpp
+  #include "main.hpp"
+
+  int main() {
+      Multiplier<int> multi1;
+      Multiplier<float> multi3;
+
+      int input1,input2;
+      cin>>input1;
+      cin>>input2;
+
+      multi1.setM1(input1);
+      multi1.setM2(input2);
+      multi1.setProduct();
+      multi1.printEquation();
+
+      cout<<"\n";
+      float input3, input4;
+      cin>>input3;
+      cin>>input4;    
+      multi3.setM1(input3);
+      multi3.setM2(input4);
+      multi3.setProduct();
+      multi3.printEquation();
+      return 0;
+  }
+  ```
+- There is an issue with generic classes, and it involves array. In order to solve the problem, we have to add a default value using a constructor. This issue arises from the fact that compilers need to know about the variable type and the number of elements required for an array at compile time. This information is necessary to allocate memory for the array.
+
+## Classes and Inheritance
+
+
+
+
+
+
+
+
+
+
+
 
 
 
