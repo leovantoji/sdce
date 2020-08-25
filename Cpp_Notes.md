@@ -1,4 +1,19 @@
 # Udacity C++ For Programmers
+- Contents:
+  - Basics: Program Structure, namespaces, user I/O, file I/O, header files.
+  - Compilation and Execution in a Linux/Unix environment.
+  - Arithmetic Operations.
+  - Control Flow: relational operators, logic operators, `if-else`, `switch`, `for`, `while`.
+  - Pointers.
+  - Arrays: single and multi-dimensional arrays.
+  - Functions: declaring and defining functions.
+  - Classes: defining and using classes.
+  - Overloading.
+  - Templates.
+  - Classes and Inheritance.
+  - Polymorphism.
+  - Vectors and Iterators.
+
 ## Basics
 - According to Bjarne Stroustrup, the creator of C++, C++ is a programming language that is **primarily for applications** that are very demanding on **performance, energy consumption** and **speed**. If there are serious concerns about **reliability, performance** and **response time**, C++ becomes a good choice.
 - Each C++ program consists of two parts: the **preprocessor directives** and the **main function**.
@@ -1178,7 +1193,8 @@ break
   ```
 - **Pure virtual functions** are a special case of virtual functions. A pure virtual function is used when the base class has a function that will be defined in its derived class, but it has no meaningful definition in the base class.
 
-## Vectors
+## Vectors and Iterators
+- 
 
 
 
