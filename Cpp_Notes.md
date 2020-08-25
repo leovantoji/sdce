@@ -1006,10 +1006,179 @@ break
 - There is an issue with generic classes, and it involves array. In order to solve the problem, we have to add a default value using a constructor. This issue arises from the fact that compilers need to know about the variable type and the number of elements required for an array at compile time. This information is necessary to allocate memory for the array.
 
 ## Classes and Inheritance
+- In C++, we can derive a class from another class, called a base. The derived class can access members and functions of the base class. 
+- There are **three types of access control**. It is **very rare** to have a **protected or private inheritance**.
+  - **Public inheritance** means all public members of the base class are accessible to the derived class.
+  - **Private inheritance** means all members of the base class are private to the derived class.
+  - **Protected inheritance** means all members of the base class are protected to the derived class.
+- Example:
+  ```C++
+  #include <iostream>
+  #include <string>
+  using namespace std;
 
+  class Flower {
+      private:
+          string bloomTime;
+      public:
+          Flower();
+          void setBloomTime(string bloomTime);
+          string getBloomTime();
+  };
 
+  Flower::Flower() {
+      this->bloomTime = "unknown";
+  }
 
+  void Flower::setBloomTime(string bloomTime) {
+      this->bloomTime = bloomTime;
+  }
 
+  string Flower::getBloomTime() {
+      return this->bloomTime;
+  }
+
+  //Rose is derived from the class Flower
+  class Rose : public Flower {
+      private:
+          string fragrance;
+      public:
+          Rose();
+          void setFragrance(string fragrance);
+          string getFragrance();
+  };
+
+  Rose::Rose() {
+      this->fragrance = "unknown";
+  }
+
+  void Rose::setFragrance(string fragrance) {
+      this->fragrance = fragrance;
+  }
+
+  string Rose::getFragrance() {
+      return this->fragrance;
+  }
+  ```
+- C++ classes can inherit from **more than one class**. This is known as **multiple inheritance**. An example is given below.
+  ```C++
+  #include <iostream>
+  #include <string>
+  using namespace std;
+
+  class Patient {
+      private:
+          int idNumber;
+      public:
+          void setIdNumber(int idNumber);
+          int getIdNumber();
+  };
+
+  void Patient::setIdNumber(int idNumber) {
+      this->idNumber = idNumber;
+  }
+
+  int Patient::getIdNumber() {
+      return this->idNumber;
+  }
+
+  class Dog {
+      private:
+          string breed;
+      public:
+          void setBreed(string breed);
+          string getBreed();
+  };
+
+  void Dog::setBreed(string breed) {
+      this->breed = breed;
+  }
+
+  string Dog::getBreed() {
+      return this->breed;
+  }
+
+  class Pet : public Patient, public Dog {
+      private:        
+          string name;
+      public:
+          void setName(string name);
+          string getName();
+  };
+
+  void Pet::setName(string name) {
+      this->name = name;
+  }
+
+  string Pet::getName() {
+      return this->name;
+  }
+  ```
+
+## Polymorphism
+- C++ allows **dynamic binding** through the use of **Virtual Functions**. A **virtual function** is a member function that you **expect to be redefined in derived class**. When you refer to a derived class object using a pointer or a reference to the base class, you can call a virtual function for that object and execute the derived class's version of the function. More about [C++ Virtual Functions](https://docs.microsoft.com/en-us/cpp/cpp/virtual-functions?redirectedfrom=MSDN&view=vs-2019).
+  ```C++
+  //main.hpp
+  #include <iostream>
+  #include <string>
+  using namespace std;
+
+  class Employee {
+      private:
+          float payRate;
+          string name;
+          int eID;
+      public:
+          void setPayRate(float payRate);
+          float getPayRate();
+          virtual float calcWeeklyPay(); //virtual function
+  };
+
+  void Employee::setPayRate(float payRate) {
+      this->payRate = payRate;
+  }
+
+  float Employee::getPayRate() {
+      return this->payRate;
+  }
+
+  float Employee::calcWeeklyPay() {
+      return 40 * this->payRate;
+  }
+
+  class Manager : public Employee {
+      public:
+          float calcWeeklyPay();
+  };
+
+  float Manager::calcWeeklyPay() {
+      return Employee::getPayRate() / 52;
+  }
+
+  //main.cpp
+  #include "main.hpp"
+
+  int main() {
+      const string status = "salary"; //options: hourly or salary
+      string level;
+      level = "salary";
+      Employee *e1; //e1 is now a pointer to Employee object
+
+      if(status != level) {
+          e1 = new Employee(); //we define an hourly-waged employee
+      } else {
+          e1 = new Manager(); //we define a salaried employee
+      }
+
+      e1->setPayRate(12000.00);
+      cout<<"e1 pay: $"<<e1->calcWeeklyPay();
+      delete e1;
+      return 0;
+  }
+  ```
+- **Pure virtual functions** are a special case of virtual functions. A pure virtual function is used when the base class has a function that will be defined in its derived class, but it has no meaningful definition in the base class.
+
+## Vectors
 
 
 
