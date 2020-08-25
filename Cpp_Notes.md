@@ -1215,7 +1215,29 @@ break
       return 0;
   }
   ```
-
+- Vectors are **more versatile than arrays**, and can be **resized during runtime**. We can also **insert elements into a vector**. This characteristic adds a lot of freedom to vectors that we don't have with arrays. It also means we have to adjust how we **access elements in a vector**.
+- First element of a vector is **begin**, not the 0th element. Last element of a vector is **end**.
+- We use an **iterator to cycle through the vector**. We need to **dereference** the iterator to print out the value of the vector.
+  ```C++
+  std::vector<int>::iterator it;
+  for(it = vectorInts.begin(); it != vectorInts.end(); it++) {
+      std::cout<<*it<<" ";
+  }
+  ```
+- We use `::assign` to add and define elements to the vector. Nonetheless, `::assign` writes over the elements in the vector.
+- We can add elements to the end (or back) of a vector using `::push_back`.
+- `insert` adds elements to the location **after the iterator**. Thus, in order to add elements using `insert`, we need to set the iterator to the location right before where you want to add an element. Since **all iterator locations are invalid after an `insert`**, we need to **reset the iterator to the beginning of a vector** before inserting the next value. For example:
+  ```C++
+  //set the iterator to a known destination
+  it = vectorInts.begin() + 1;
+  //insert an element
+  vectorInts.insert(it, -1);
+  
+  //reset the iterator
+  it = vectorInts.begin();
+  //insert another element
+  vectorInts.insert(it + 3, -2);
+  ```
 
 
 
