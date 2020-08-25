@@ -1194,7 +1194,27 @@ break
 - **Pure virtual functions** are a special case of virtual functions. A pure virtual function is used when the base class has a function that will be defined in its derived class, but it has no meaningful definition in the base class.
 
 ## Vectors and Iterators
-- 
+- Instantiating a vector of integers, called `vectorInts`:
+  ```C++
+  #include <iostream>
+  #include <vector> //must have the vector library
+  
+  int main() {
+      //creating a vector of integers
+      std::vector<int> vectorInts;
+      
+      //0 element
+      std::cout<<"vectorInts has "<<vectorInts.size()<<" elements.\n";
+      
+      //change the size of vectorInts using resize()
+      vectorInts.resize(6);
+      
+      //6 elements
+      std::cout<<"vectorInts has "<<vectorInts.size()<<" elements.\n";
+      
+      return 0;
+  }
+  ```
 
 
 
