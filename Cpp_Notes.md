@@ -678,6 +678,24 @@ break
     std::cout<<"\nShape2 is smaller than Shape1"<<std::endl;
   } 
   ```
+- C++ **inline** function is powerful concept that is commonly used with classes. If a function is inline, the compiler places a copy of the code of that function at each point where the function is called at compile time. Any change to an inline function could require all clients of the function to be recompiled because compiler would need to replace all the code once again otherwise it will continue with old functionality.
+  ```C++
+  inline int Max(int x, int y) {
+      return (x > y)? x : y;
+  }
+  ```
+- An interface describes the behavior or capabilities of a C++ class without committing to a particular implementation of that class. The C++ interfaces are implemented using **abstract classes** and these abstract classes should not be confused with data abstraction which is a concept of keeping implementation details separate from associated data. A class is made abstract by **declaring at least one of its functions as pure virtual function**. A pure virtual function is specified by placing `= 0` in its declaration as follows.
+  ```C++
+  class Box {
+      public:
+          //pure virtual function
+          virtual double getVolume() = 0;
+      private:
+          double length;  // length of a box
+          double breadth; // breadth of a box
+          double height;  // height of a box
+  }
+  ```
 
 ## Overloading
 - **Function overloading** allows us to use the same function name for different functions. As long as the argument list is different, the compiler will be able to choose the correct definition. Different argument list means either the variable type is different and/or the number of arguments is different. Example:
@@ -1225,8 +1243,14 @@ break
   }
   ```
 - We use `::assign` to add and define elements to the vector. Nonetheless, `::assign` writes over the elements in the vector.
+  ```C++
+  vInts.assign(4, 5);
+  ```
 - We can add elements to the end (or back) of a vector using `::push_back`.
-- `insert` adds elements to the location **after the iterator**. Thus, in order to add elements using `insert`, we need to set the iterator to the location right before where you want to add an element. Since **all iterator locations are invalid after an `insert`**, we need to **reset the iterator to the beginning of a vector** before inserting the next value. For example:
+  ```C++
+  vInts.push_back(0);
+  ```
+- `::insert` adds elements to the location **after the iterator**. Thus, in order to add elements using `::insert`, we need to set the iterator to the location right before where you want to add an element. Since **all iterator locations are invalid after an `::insert`**, we need to **reset the iterator to the beginning of a vector** before inserting the next value. For example:
   ```C++
   //set the iterator to a known destination
   it = vectorInts.begin() + 1;
@@ -1238,18 +1262,35 @@ break
   //insert another element
   vectorInts.insert(it + 3, -2);
   ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+- `::emplace` puts an element in a vector at the position pointed to by the iterator. `::emplace` **differs from `::insert`** in the method used to insert the element. While `::insert` **copies the values of the vector**, `::emplace` does an **in-place insertion**. This means the insertion occurs at the point after the iterator. The difference makes `::emplace` more efficient than `::insert` in special cases.
+  - `::insert` copies objects into the vector.
+  - `::emplace` constructs objects inside of the vector.
+  ```C++
+  //set the iterator to a known destination
+  it = vectorInts.begin() + 1;
+  //emplace an element
+  vectorInts.emplace(it, -1);
+  
+  //reset the iterator
+  it = vectorInts.begin();
+  //emplace another element
+  vectorInts.emplace(it + 3, -2);
+  ```
+- `::clear` can be used to **remove all elements from the vector at the same time**.
+  ```C++
+  std::vector<int> vInts;
+  vInts.assign(5, 5);
+  vInts.clear();
+  ```
+- `::erase` can be used to **delete a single element** or **delete a range of elements** from a vector.
+  ```C++
+  //erase the 5th element in the vector
+  vInts.erase(vInts.begin() + 4);
+  
+  //erase a range of elements in the vector
+  vInts.erase(vInts.begin() + 1, vInts.begin() + 3);
+  ```
+- We can remove the last element of a vector using `::pop_back`. This method **DOES NOT** return a value.
+  ```C++
+  vInts.pop_back();
+  ```
