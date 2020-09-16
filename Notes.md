@@ -129,14 +129,53 @@
   ![birds_eye_view_transform](https://github.com/leovantoji/sdce/blob/master/images/birds_eye_view_transform.png)
 - OpenCV's useful functions:
   - Compute the perspective transform, M, given source and destination points (need 4 points):
-  `M = cv2.getPerspectiveTransform(src, dst)`
+  ```python
+  M = cv2.getPerspectiveTransform(src, dst)
+  ```
   - Compute the inverse perspective transform:
-  `Minv = cv2.getPerspectiveTransform(dst, src)`
+  ```python
+  Minv = cv2.getPerspectiveTransform(dst, src)
+  ```
   - Warp an image using the perspective transform, M:
-  `warped_img = cv2.warpPerspective(img, M, img_size, flags=cv2.INTER_LINEAR)`
+  ```python
+  warped_img = cv2.warpPerspective(img, M, img_size, flags=cv2.INTER_LINEAR)
+  ```
 
 ## Gradient and Colour Space
-- 
+- **Sobel operator** is at the **heart of the Canny edge dection algorithm**. Applying the Sobel operator to an image is a **way of taking the derivative of the image** in the *x* or *y* direction. Below are examples of the operators witth a **kernel size** of 3 for *Sobel<sub>x</sub>* and *Sobel<sub>y</sub>*. 3x3 is the minimum size, and the kernel size can be any **odd number**. A **larger kernel** implies taking the gradient over a larger region of the image, or, in other words, a smoother gradient.  
+  ![sobel-operator](https://github.com/leovantoji/sdce/blob/master/images/sobel-operator.png)
+- If the image is flat across that region (i.e., there is little change in values across the given region), then the result (the sum of the element-wise product of the operator and corresponding immage pixels) will be zero.  
+  ![Sobel_flat_region_example](https://github.com/leovantoji/sdce/blob/master/images/Sobel_flat_region_example.png)
+- If *S<sub>x</sub>* operator is applied to a region of the image where values are rising from left to right, then the result will be positive, implying a positive derivative. The sum of this matrix is 8, meaning a gradient exists in the x-direction.  
+  ![Sobel_positive_gradient_example](https://github.com/leovantoji/sdce/blob/master/images/Sobel_positive_gradient_example.png)
+- Taking the gradient in the **x-direction emphasises edges closer to vertical**, while taking the gradient in the **y-direction emphasises edges closer to horizontal**.
+- Useful functions:
+  - NOTE: Convert the image to grayscale as we need to pass a single colour channel to the `cv2.Sobel()` function.
+  - Calculate the derivative in the x direction (the 1, 0 at the end denotes x direction):
+  ```python
+  sobelx = cv2.Sobel(gray, cv2.CV_64F, 1, 0)
+  ```
+  - Calculate the derivative in the y direction (the 0, 1 at the end denotes y direction):
+  ```python
+  sobely = cv2.Sobel(gray, cv2.CV_64F, 0, 1)
+  ```
+  - Calculte the absolute value of the x derivative:
+  ```python
+  abs_sobelx = np.absolute(sobelx)
+  ```
+  - Convert the absolute value image to 8-bit:
+  ```python
+  scaled_sobel = np.uint8(255*abs_sobelx/np.max(abs_sobelx))
+  ```
+  - Create a mask 1's where the scaled gradient magnitude is `> thresh_min` and `< thresh_max`
+  ```python
+  binary_output = np.zeros_like(scaled_sobel)
+  binary_output[(scaled_sobel > thresh_min) & (scaled_sobel < thresh_max)] = 1
+  ```
+- The magnitude, or absolute value, of the gradient is just the square root of the squares of the individual x and y gradients. For **a gradient in both the x and y direction**, the magnitude is the square root of the sum of the squares.  
+  ![sobel_magnitude_formula](https://github.com/leovantoji/sdce/blob/master/images/sobel_magnitude_formula.png)
+- The **direction of the gradient** is simply the **inverse tangent (arctangent) of the y gradient divided by the x gradient**: *arctan(Sobel<sub>y</sub>/Sobel<sub>x</sub>)*. Each pixel of the resulting image contains a value for the angle of the gradient away from horizontal in units of radians, covering a range of *−π/2* to *π/2*. An orientation of 0 implies a vertical line and orientations of *+/−π/2* imply horizontal lines. 
+  - `np.arctan2` can return values between *+/−π*. Nonetheless, as we'll take the absolute value of *Sobel<sub>x</sub>*, this restricts the values to *+/−π/2*.
 
 
 
