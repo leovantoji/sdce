@@ -176,15 +176,66 @@
   ![sobel_magnitude_formula](https://github.com/leovantoji/sdce/blob/master/images/sobel_magnitude_formula.png)
 - The **direction of the gradient** is simply the **inverse tangent (arctangent) of the y gradient divided by the x gradient**: *arctan(Sobel<sub>y</sub>/Sobel<sub>x</sub>)*. Each pixel of the resulting image contains a value for the angle of the gradient away from horizontal in units of radians, covering a range of *−π/2* to *π/2*. An orientation of 0 implies a vertical line and orientations of *+/−π/2* imply horizontal lines. 
   - `np.arctan2` can return values between *+/−π*. Nonetheless, as we'll take the absolute value of *Sobel<sub>x</sub>*, this restricts the values to *+/−π/2*.
-
-
-
-
-
-
-
-
-
+- **RGB Thresholding** works best on **white lane pixels**, and **doesn't work well** in images with **varying light conditions** or when **lanes are a different colour like yellow**.
+- A **colour space** is a **specific organisation of colours**; colour spaces provide a way to categorise colours and represent them in digital images. **RGB** is red-green-blue colour space.   
+  ![rgb_color_space](https://github.com/leovantoji/sdce/blob/master/images/rgb_color_space.png)
+- Other commonly used colour spaces in image analysis include **HSV (hue, saturation, value)** and **HLS (hue, lightness, saturation)**.
+  - **Hue**: the value that **represents the colour** independent of any change in brightness. For instance, light red and dark red have the same hue.
+  - **Saturation**: is a **measurement of colourfulness**. Thus, as colours get lighter and closer to white, they have lower a saturation value. On the other hand, the most intense colours like a bright primary colour, have a high saturation value.
+  - **Lightness** and **Value**: represent different ways to **measure the relative lightness or darkness of a colour**. For example, a dark red will have a similar hue but much lower value for lightness than a light red.  
+  ![hsv_hls](https://github.com/leovantoji/sdce/blob/master/images/hsv_hls.png)
+- Useful OpenCV's function:
+  ```python
+  hls = cv2.cvtColor(img, cv2.COLOR_RGB2HLS)
+  ```
+- The **S** channel is **preferrable** when it comes to **changing conditions** in image.
+  ```python
+  import matplotlib.pyplot as plt
+  import matplotlib.image as mpimg
+  import numpy as np
+  import cv2
+  
+  image = mpimg.imread('test6.jpg')
+  
+  def hls_select(img, thresh=(0, 255)):
+    # 1) Convert to HLS color space
+    hls = cv2.cvtColor(img, cv2.COLOR_RGB2HLS)
+    
+    # 2) Apply a threshold to the S channel
+    S = hls[:,:,2]
+    binary_output = np.zeros_like(S)
+    binary_output[(S > thresh[0]) & (S <= thresh[1])] = 1
+    
+    # 3) Return a binary image of threshold result
+    return binary_output
+  ```
+- Combining **gradient threshold** and **S channel threshold**.  
+  ![combine_gradient_s_thresh](https://github.com/leovantoji/sdce/blob/master/images/combine_gradient_s_thresh.png)
+  ```python
+  def pipeline(img, s_thresh=(170, 255), sx_thresh=(20, 100)):
+    img = np.copy(img)
+    # Convert to HLS color space and separate the V channel
+    hls = cv2.cvtColor(img, cv2.COLOR_RGB2HLS)
+    h_channel = hls[:,:,0]
+    l_channel = hls[:,:,1]
+    s_channel = hls[:,:,2]
+    # Sobel x
+    sobelx = cv2.Sobel(l_channel, cv2.CV_64F, 1, 0) # Take the derivative in x
+    abs_sobelx = np.absolute(sobelx) # Absolute x derivative to accentuate lines away from horizontal
+    scaled_sobel = np.uint8(255*abs_sobelx/np.max(abs_sobelx))
+    
+    # Threshold x gradient
+    sxbinary = np.zeros_like(scaled_sobel)
+    sxbinary[(scaled_sobel >= sx_thresh[0]) & (scaled_sobel <= sx_thresh[1])] = 1
+    
+    # Threshold color channel
+    s_binary = np.zeros_like(s_channel)
+    s_binary[(s_channel >= s_thresh[0]) & (s_channel <= s_thresh[1])] = 1
+    # Stack each channel to view their individual contributions in green and blue respectively
+    # This returns a stack of the two binary images, whose components you can see as different colors
+    color_binary = np.dstack((np.zeros_like(sxbinary), sxbinary, s_binary)) * 255
+    return color_binary
+  ```
 
 
 
