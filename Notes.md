@@ -237,6 +237,145 @@
     return color_binary
   ```
 
+## Advanced Computer Vision
+- After applying calibration, thresholding, and a perspective transform to a road image, you should have a binary image where the lane lines stand out clearly. Nonetheless, you still need to decide explicitly which pixels are part of the lines and which belong to the left line or right line. **Plotting a histogram** of where the binary activations occur across the image is **one potential solution** for this.
+  ```python
+  import numpy as np
+  import matplotlib.image as mpimg
+  import matplotlib.pyplot as plt
+  
+  # load image. We normalised image to 0-1 since mpimg.imread load .jpy as 0-255
+  img = mpimg.imread('warped_example.jpg')/255
+  
+  def hist(img):
+      # lane lines are likely to be mostly vertical nearest to the car
+      bottom_half = img[img.shape[0]//2:,:]
+      
+      # sum across image pixels vertically - make sure to set an `axis`.
+      # the highest area of vertical lines should be larger values
+      histogram = np.sum(bottom_half, axis=0)
+      
+      return histogram
+  
+  # create histogram of image binary activations
+  histogram = hist(img)
+  
+  # visualise the resulting histogram
+  plt.plot(histogram)
+  ```
+- **Sliding window**: With this histogram, we are adding up the pixel values along each column in the image. In our thresholded binary image, pixels are either 0 or 1, so **the two most prominent peaks in this histogram** will be good indicators of the **x-position of the base of the lane lines**. We can use that as a starting point for where to search for the lines. From that point, we can use a **sliding window**, placed around the line centres, to find and **follow the lines up to the top of the frame**.
+  ![sliding_window](https://github.com/leovantoji/sdce/blob/master/images/sliding_window.png)
+- We need to **split the histogram into 2 sides, one for each lane line**.
+  ```python
+  import numpy as np
+  import cv2
+  import matplotlib.pyplot as plt
+  
+  # take a histogram of the bottom half of the image
+  histogram = np.sum(binary_warped[binary_warped.shape[0]//2:,:], axis=0)
+  
+  # create an output image to draw on and visualise the result
+  out_img = np.dstack((binary_warped, binary_warped, binary_warped))*255
+  
+  # find the peak of the left and right halves of the histogram
+  midpoint = np.int(histogram.shape[0]//2)
+  leftx_base = np.argmax(histogram[:midpoint])
+  rightx_base = np.argmax(histogram[midpoint:]) + midpoint
+  ```
+- The next step is to set up a few hyperparameters related to the sliding windows. We need to iterate across the binary activations in the image.
+  ```python
+  # choose the number of sliding windows
+  nwindows = 9
+  
+  # set the width of the windows +/- margin
+  margin = 100
+  
+  # set thee minimum number of pixels found to recenter window
+  minpix = 50
+  
+  # set height of windows - based on nwindows above and image shape
+  window_height = np.int(binary_warped.shape[0]//nwindows)
+  
+  # identify the x and y position of all non-zero pixels in the image
+  nonzero = binary_warped.nonzero()
+  nonzeroy = np.array(nonzero[0])
+  nonzerox = np.array(nonzero[1])
+  
+  # current positions to be updated later for each window in nwindows
+  leftx_current = leftx_base
+  rightx_current = rightx_base
+  
+  # empty lists to receive left and right lane pixel indices
+  left_lane_inds = []
+  right_lane_inds = []
+  ```
+- Iterate through `nwindows` to track curvature.
+  1. Loop through each window in `nwindows`.
+  2. Find the boundaries of our current window. This is based on a combination of the current window's starting point (`leftx_current` and `rightx_current`), as well as the `margin`.
+  3. Use `cv2.rectangle` to draw these window boundaries onto our visualisation image `out_img`.
+  4. Find out which activated pixels from `nonzeroy` and `nonzerox` above actually fall into the window.
+  ```python
+  good_left_inds = ((nonzeroy >= win_y_low) & (nonzeroy < win_y_high) & 
+      (nonzerox >= win_xleft_low) &  (nonzerox < win_xleft_high)).nonzero()[0]
+  good_right_inds = ((nonzeroy >= win_y_low) & (nonzeroy < win_y_high) & 
+      (nonzerox >= win_xright_low) &  (nonzerox < win_xright_high)).nonzero()[0]  
+  ```
+  5. Append these to our lists `left_lane_inds` and `right_lane_inds`.
+  6. If the number of pixels found in Step 4 is greater than `minpix`, recenter the window (i.e. `leftx_current` and `rightx_current`) based on the mean position of these pixels.
+  ```python
+  if len(good_left_inds) > minpix:
+      leftx_current = np.int(np.mean(nonzerox[good_left_inds]))
+
+  if len(good_right_inds) > minpix:
+      rightx_current = np.int(np.mean(nonzerox[good_right_inds]))
+  ```
+- Fit a polynomial to the line after finding all pixels belonging to each line through the sliding window method.
+  ```python
+  # concatenate the arrays of indices
+  left_lane_inds = np.concatenate(left_lane_inds)
+  right_lane_inds = np.concatenate(right_lane_inds)
+  
+  # extract left and right line pixel positions
+  leftx = nonzerox[left_lane_inds]
+  lefty = nonzeroy[left_lane_inds]
+  rightx = nonzerox[right_lane_inds]
+  righty = nonzeroy[right_lane_inds]
+  
+  # fit a 2nd degree polynomial
+  left_fit = np.polyfit(leftx, lefty, 2)
+  right_fit = np.polyfit(rightx, righty, 2)
+  
+  # generate x and y values for plotting
+  ploty = np.linspace(0, binary_warped.shape[0]-1, binary_warped.shape[0])
+  left_fitx = left_fit[0]*ploty**2 + left_fit[1]*ploty + left_fit[2]
+  right_fitx = right_fit[0]*ploty**2 + right_fit[1]*ploty + right_fit[2]
+  ```
+- Computing the radius of curvature of the fit.
+  ![color-fit-lines](https://github.com/leovantoji/sdce/blob/master/images/color-fit-lines.png)  
+- The radius of curvature at any point *x* of the function *x = f(y)* is given as follow:
+  ![radius_of_curvature_formula](https://github.com/leovantoji/sdce/blob/master/images/radius_of_curvature_formula.png)
+- We need to convert from pixels to real-world metre measurements.
+  ```python
+  # define conversions in x and y from pixels space to meters
+  ym_per_pix = 30/720 # meters per pixel in y dimension
+  xm_per_pix = 3.7/700 # meters per pixel in x dimension
+  
+  # We'll choose the maximum y-value, corresponding to the bottom of the image
+  y_eval = np.max(ploty)
+    
+  # implement the calculation of R_curve (radius of curvature) #####
+  left_curverad = (1+(2*y_eval*left_fit_cr[0]*ym_per_pix + left_fit_cr[1])**2)**(1.5) / np.absolute(2*left_fit_cr[0])
+  
+  right_curverad = (1+(2*y_eval*right_fit_cr[0]*ym_per_pix + right_fit_cr[1])**2)**(1.5) / np.absolute(2*right_fit_cr[0])
+  ```
+
+
+
+
+
+
+
+
 
 
 
