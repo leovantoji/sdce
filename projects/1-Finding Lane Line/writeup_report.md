@@ -4,7 +4,6 @@
 
 [image1]: ./test_images_output/whiteCarLaneSwitch_output.jpg "whiteCarLaneSwitch_output"
 
-
 ### Reflection
 
 ### 1. Describe your pipeline. As part of the description, explain how you modified the draw_lines() function.
@@ -20,9 +19,6 @@ My pipeline consists of the following steps:
 
 In order to draw a single line on the left and right lanes, slopes for each line segments identified by Hough transformation step are calculated. Negative and Positive slopes and y intercepts are separated as they correspond to the left and right lane line respectively. A pair of median slope and y intercept are then constructed for both the left and right lane line. Median was used instead of mean because I want to eliminate of certain outlier line segments. The top and bottom of the lane were identified as the minimum and maximum y values of the various line segments which are fed into the function through parameter `lines`. Having these additional information allows the left and right lane lines to be extrapolated to the top and bottom of the lane.
 
-![alt text][image1]
-
-
 ### 2. Identify potential shortcomings with your current pipeline
 
 A few shortcomings with my current pipeline:
@@ -30,7 +26,6 @@ A few shortcomings with my current pipeline:
 - The left and right lane slope and y intercept were originally estimated using mean. Nonetheless, I realised using mean can suffer from irrelevant line segments (outliers) detected in the Hough transformation step. 
 - GaussianBlur filter may also blur the edges detected. 
 - The current pipeline doesn't deal with other potential noises: shadows, dirts on the camera, change of weather, etc. All of these can hinder the working of the current pipeline.
-
 
 ### 3. Suggest possible improvements to your pipeline
 
