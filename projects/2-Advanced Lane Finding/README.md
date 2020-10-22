@@ -112,6 +112,7 @@ The whole pipeline consisting of the previous steps was applied to a video. As t
 In addition, if the newly detected lanes diverge too far from previously detected lanes, the newly detected lanes will be discarded. The lane for each new frame is the average of the last 3 detected lines.
 
 Below is the output.
+
 ![video output][video].
 
 ### Discussion
