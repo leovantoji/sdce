@@ -25,7 +25,7 @@ In this project, I created a software pipeline to identify the lane boundaries i
 [image9]: ./output_images/Mag_Dir_Grad.jpg "Magnitude & Direction of Gradients"
 [image10]: ./output_images/lane_detected.png "Lane Detected"
 [image11]: ./output_images/warped.jpg "Processed Warp"
-[video]: ./output_videos/project_video_output.mp4 "Video"
+[video]: ./output_videos/project_video_output.gif "Video"
 
 ### Step 1: Compute the camera calibration matrix and distortion coefficients given a set of chessboard images
 The camera was calibrated using a set of images of a chessboard. For each image, corners were detected and drawn on the image as shown below.
@@ -111,7 +111,8 @@ The whole pipeline consisting of the previous steps was applied to a video. As t
 
 In addition, if the newly detected lanes diverge too far from previously detected lanes, the newly detected lanes will be discarded. The lane for each new frame is the average of the last 3 detected lines.
 
-Here is the link to the [video output][video].
+Below is the output.
+[video output][video].
 
 ### Discussion
 #### Limitations
