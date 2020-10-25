@@ -369,8 +369,71 @@
   right_curverad = (1+(2*y_eval*right_fit_cr[0]*ym_per_pix + right_fit_cr[1])**2)**(1.5) / np.absolute(2*right_fit_cr[0])
   ```
 
-
-
+## Tensorflow 1.x
+- `tf.placeholder()` returns a tensor that gets its value from data passed to the `tf.session.run()` function, allowing you to set the input right before the session runs. `feed_dict` parameter in `tf.session.run()` is used to set the placeholder tensor.
+  ```python
+  x = tf.placeholder(tf.string)
+  y = tf.placeholder(tf.int32)
+  z = tf.placeholder(tf.float32)
+  
+  with tf.Session() as sess:
+      output = sess.run(x, feed_dict={x: 'Test string', y: 123, z: 1.0})
+  ```
+- Basic Math functions:
+  ```python
+  x = tf.add(5, 2) # 7
+  x = tf.subtract(10, 4) # 6
+  x = tf.multiply(2, 5) # 10
+  ```
+- It may be necessary to convert between types to make certain operators work together.
+  ```python
+  # No conversion
+  tf.subtract(tf.constant(2.0), tf.constant(1)) # Fails with ValueError: Tensor conversion requested dtype float32 for Tensor with dtype int32:
+  
+  # After conversion
+  tf.subtract(tf.cast(tf.constant(2.0), tf.int32), tf.constant(1)) # 1
+  ```
+- `tf.Variable` class creates a tensor with an initial value that can be modified, much like a normal Python variable. This tensor stores its state in the session, so you must initialise the state of the tensor manually. The `tf.global_variables_initializer()` function is used to initialise the state of all the Variable tensors and returns an operation that will initialise all TensorFlow variables from the graph. Using the `tf.Variable` class allows us to change the weights and bias, but an initial value needs to be chosen. 
+  ```python
+  init = tf.global_variables_initializer()
+  with tf.Session() as sess:
+      sess.run(init)
+  ```
+- The **weights** are often initialised as **random numbers from a normal distribution**. The `tf.truncated_normal()` function returns a tensor with random values from a normal distribution whose magnitude is no more than 2 standard deviations from the mean.
+  ```python
+  # weight initialisation
+  n_features = 120
+  n_labels = 5
+  weights = tf.Variable(tf.truncated_normal((n_features, n_labels)))
+  ```
+- The bias doesn't need to be randomised. The `tf.zeros()` function returns a tensor with all zeros.
+  ```python
+  n_labels = 5
+  bias = tf.Variable(tf.zeros(n_labels))
+  ```
+- Example of `tf.nn.softmax`:
+  ```python
+  logit_data = [2.0, 1.0, 0.1]
+  logits = tf.placeholder(tf.float32)
+  softmax = tf.nn.softmax(logits)
+  
+  with tf.Session() as sess:
+      output = sess.run(softmax, feed_dict={logits: logit_data})
+      print(output)
+  ```
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
 
 
 
