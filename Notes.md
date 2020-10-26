@@ -351,9 +351,13 @@
   right_fitx = right_fit[0]*ploty**2 + right_fit[1]*ploty + right_fit[2]
   ```
 - Computing the radius of curvature of the fit.
-  ![color-fit-lines](https://github.com/leovantoji/sdce/blob/master/images/color-fit-lines.png)  
+  
+  ![color-fit-lines](https://github.com/leovantoji/sdce/blob/master/images/color-fit-lines.png)
+  
 - The radius of curvature at any point *x* of the function *x = f(y)* is given as follow:
+  
   ![radius_of_curvature_formula](https://github.com/leovantoji/sdce/blob/master/images/radius_of_curvature_formula.png)
+  
 - We need to convert from pixels to real-world metre measurements.
   ```python
   # define conversions in x and y from pixels space to meters
