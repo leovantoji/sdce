@@ -425,8 +425,69 @@
       output = sess.run(softmax, feed_dict={logits: logit_data})
       print(output)
   ```
+- **Mini-batching** is a technique for **training on subsets of the dataset** instead of all the data at one time. This provides the **ability to train a model**, even if a computer **lacks the memory to store the entire dataset**. However, this technique is **computationally inefficient** since you can't calculate the loss simultaneously across all samples. 
+- **Mini-batching** could be quite useful when combined with SGD. The idea is to randomly shuffle the data at the start of each epoch, then create the mini-batches. For each mini-batch, you train the network weights with gradient descent. Since these batches are random, you're performing SGD with each batch.
+- **Mini-batching** in Tensorflow.
+  ```python
+  def batches(batch_size=1, features, labels):
+      assert len(features) == len(labels), 'Invalid size!'
+      
+      output = []
+      for i in range(0, len(features), batch_size):
+          output.append((features[i:(i+batch_size)], labels[i:(i+batch_size)]))
+      
+      return output
   
+  train_features = mnist.train.images
+  test_features = mnist.test.images
   
+  train_labels = mnist.train.labels.astype(np.float32)
+  test_labels = mnist.test.labels.astype(np.float32)
+  
+  features = tf.placeholder(tf.float32, [None, n_input])
+  labels = tf.placeholder(tf.float32, [None, n_classes])
+  
+  batch_size = 128
+  with tf.Session() as sess:
+      sess.run(tf.global_variables_initializer())
+    
+      # Train optimizer on all batches
+      for batch_features, batch_labels in batches(batch_size, train_features, train_labels):
+          sess.run(optimizer, feed_dict={features: batch_features, labels: batch_labels})
+
+      # Calculate accuracy for test dataset
+      test_accuracy = sess.run(accuracy, feed_dict={features: test_features, labels: test_labels})
+
+  print('Test Accuracy: {}'.format(test_accuracy))
+  ```
+- An **epoch** is a **single forward and backward pass** of the whole dataset. This is used to increase the accuracy of the model without requiring more data.
+  ```python
+  batch_size = 128
+  epochs = 10
+  learn_rate = 0.001
+
+  with tf.Session() as sess:
+      sess.run(tf.global_variables_initializer())
+
+      # Training cycle
+      for epoch_i in range(epochs):
+
+          # Loop over all batches
+          for batch_features, batch_labels in batches(batch_size, train_features, train_labels):
+              train_feed_dict = {
+                  features: batch_features,
+                  labels: batch_labels,
+                  learning_rate: learn_rate}
+              sess.run(optimizer, feed_dict=train_feed_dict)
+
+          # Print cost and validation accuracy of an epoch
+          print_epoch_stats(epoch_i, sess, batch_features, batch_labels)
+
+      # Calculate accuracy for test dataset
+      test_accuracy = sess.run(
+          accuracy,
+          feed_dict={features: test_features, labels: test_labels})
+  ```
   
   
   
