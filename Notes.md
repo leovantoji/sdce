@@ -352,7 +352,7 @@
   ```
 - Computing the radius of curvature of the fit.
   
-  ![color-fit-lines](https://github.com/leovantoji/sdce/blob/master/images/color-fit-lines.png)
+  ![color-fit-lines](https://github.com/leovantoji/sdce/blob/master/images/color-fit-lines.jpg)
   
 - The radius of curvature at any point *x* of the function *x = f(y)* is given as follow:
   
