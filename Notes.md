@@ -488,10 +488,83 @@
           accuracy,
           feed_dict={features: test_features, labels: test_labels})
   ```
+- The `tf.train.Saver` class allows you to save any `tf.Variable` in your file system.
+  ```python
+  # file path to save data
+  save_file = './model.ckpt'
   
+  # Tensor variable(s) to be saved
+  weights = tf.Variable(tf.truncated_normal([2, 3]))
   
+  # class used to save and/or restore Tensor variable(s)
+  saver = tf.train.Saver()
   
+  with tf.Session() as session:
+      session.run(tf.global_variables_initializer())
+      session.run(weights)
+      
+      # save the model
+      saver.save(session, save_file)
+  ```
+- Load data previously saved with `tf.train.Saver` back to a new model.
+  ```python
+  # remove the previous weights
+  tf.reset_default_graph()
   
+  # Tensor variable(s) to be restored to
+  weights = tf.Variable(tf.truncated_normal([2, 3]))
+  
+  # class used to save and/or restore Tensor variable(s)
+  saver = tf.train.Saver()
+  
+  with tf.Session() as session:
+      # load saved Tensor variable(s)
+      saver.restore(session, save_file)
+      session.run(weights)
+  ```
+- TensorFlow uses a string identifier for Tensors and Operations called `name`. If a name is not given, TensorFlow will create one automatically. TensorFlow will give the first node the name `<Type>`, and then give the name `<Type>_<number>` for the subsequent nodes. Therefore, it's important to set `name` property manually instead of letting TensorFlow does it.
+  - **Erroneous** way:
+  ```python  
+  # Tensor variable(s) to be incorrectly saved
+  weights = tf.Variable(tf.truncated_normal([2, 3])) # name = Variable
+  biases = tf.Variable(tf.truncated_normal([3])) # name = Variable_1
+  
+  ############################
+  # SAVED weights and biases #
+  ############################
+  tf.reset_default_graph()
+  
+  # Tensor variable(s) to be incorrectly restored to
+  biases = tf.Variable(tf.truncated_normal([3])) # name = Variable
+  weights = tf.Variable(tf.truncated_normal([2, 3])) # name = Variable_1
+  
+  saver = tf.train.Saver()
+  
+  with tf.Session() as session:
+      # load the weights and bias - ERROR
+      saver.restore(session, save_file)
+  ```
+  - **Correct** way:
+  ```python
+  # Tensor variable(s) to be correctly saved
+  weights = tf.Variable(tf.truncated_normal([2, 3]), name='weights_0')
+  biases = tf.Variable(tf.truncated_normal([3]), name='bias_0')
+  
+  ############################
+  # SAVED weights and biases #
+  ############################
+  
+  tf.reset_default_graph()
+  # Tensor variable(s) to be incorrectly restored to
+  biases = tf.Variable(tf.truncated_normal([3]), name='bias_0')
+  weights = tf.Variable(tf.truncated_normal([2, 3]), name='weights_0')
+  
+  saver = tf.train.Saver()
+  
+  with tf.Session() as session:
+      # load the weights and bias - SUCCESSFUL
+      saver.restore(session, save_file)
+  ```
   
   
   
