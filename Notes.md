@@ -523,7 +523,7 @@
       session.run(weights)
   ```
 - TensorFlow uses a string identifier for Tensors and Operations called `name`. If a name is not given, TensorFlow will create one automatically. TensorFlow will give the first node the name `<Type>`, and then give the name `<Type>_<number>` for the subsequent nodes. Therefore, it's important to set `name` property manually instead of letting TensorFlow does it.
-  - **Erroneous** way:
+  - **Erroneous** way: `InvalidArgumentError (see above for traceback): Assign requires shapes of both tensors to match.`
   ```python  
   # Tensor variable(s) to be incorrectly saved
   weights = tf.Variable(tf.truncated_normal([2, 3])) # name = Variable
