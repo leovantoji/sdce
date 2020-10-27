@@ -565,7 +565,18 @@
       # load the weights and bias - SUCCESSFUL
       saver.restore(session, save_file)
   ```
+- **Dropout** is a **regularisation technique** to **reduce overfitting**. The technique temporarily drops units from the network, along with all of those units incoming and outgoing connections. The `tf.nn.dropout()` function can be used to implement dropout in TensorFlow.
+  - During training, good starting value for `keep_prob` is `0.5`.
+  - During testing, `keep_prob` should be set to `1.0` to keep all units and maximise the power of the model.
+  ```python
+  keep_prob = tf.placeholder(tf.float32) # probability to keep units
   
+  hidden_layer = tf.add(tf.matmul(features, weights[0]), biases[0])
+  hidden_layer = tf.nn.relu(hidden_layer)
+  hidden_layer = tf.nn.dropout(hidden_layer, keep_prob)
+  
+  logits = tf.add(tf.matmul(hidden_layer, weights[1]), biases[1])
+  ```
   
   
   
