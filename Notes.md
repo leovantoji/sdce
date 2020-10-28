@@ -577,9 +577,33 @@
   
   logits = tf.add(tf.matmul(hidden_layer, weights[1]), biases[1])
   ```
+- **ConvNet**'s general idea is to **progressively squeeze** the spacial dimension while **increasing the depth** which corresponds roughly to the semantic expression of your representation.  
+  ![CovNet](https://github.com/leovantoji/sdce/blob/master/images/CovNet.png)
+- CNN learns to **recognise basic lines and curves**, then shapes and blobs, and then **increasingly complex objects** within the image. Finally, the CNN classifies the image by combining the larger, more complex objects.  
+  ![hierarchy-diagram](https://github.com/leovantoji/sdce/blob/master/images/hierarchy-diagram.jpg)
+- An example: Given input shape of `32x32x3` (HxWxD), `20` filters of shape `8x8x3` (HxWxD), a stride of `2` for both height and width, and padding size of `1`. 
+  - The output will have shape of `14x14x20`.
+  - Without parameter sharing, since each neuron in an output layer must connect to each neuron in the filter and a single bias neuron, the convolutional layer has `756560` (`(8x8x3 + 1) x 14x14x20`) parameters.
+  - With parameter sharing, since each neuron in an output channel shares its weights with every other neuron in that channel, the convolutional layer has `3860` (`(8x8x3 + 1) x 20`) parameters.
+- CNN in TensorFlow.
+  ```python
+  input = tf.placeholder(tf.float32, (None, 32, 32, 3)) # image 32x32x3. None is batch.
+  filter_weights = tf.Variable(tf.truncated_normal((8, 8, 3, 20)) # height, width, input_depth, output_depth/no_of_filters
+  filter_bias = tf.Variable(tf.zeros(20))
+  strides = [1, 2, 2, 1] # (batch, height, width, depth)
+  padding = 'SAME'
+  conv = tf.nn.conv2d(input, filter_weights, strides, padding) + filter_bias
+  ```
+- TensorFlow uses the following equations for `SAME` and `VALID` padding respectively.
+  ```python
+  # SAME padding
+  out_height = ceil(float(in_height)/float(strides[1]))
+  out_width = ceil(float(in_width)/float(strides[2]))
   
-  
-  
+  # VALID padding
+  out_height = ceil(float(in_height - filter_height + 1)/float(strides[1]))
+  out_width = ceil(float(in_width - filter_width + 1)/float(strides[2]))
+  ```
   
   
   
