@@ -351,9 +351,13 @@
   right_fitx = right_fit[0]*ploty**2 + right_fit[1]*ploty + right_fit[2]
   ```
 - Computing the radius of curvature of the fit.
-  ![color-fit-lines](https://github.com/leovantoji/sdce/blob/master/images/color-fit-lines.png)  
+  
+  ![color-fit-lines](https://github.com/leovantoji/sdce/blob/master/images/color-fit-lines.jpg)
+  
 - The radius of curvature at any point *x* of the function *x = f(y)* is given as follow:
+  
   ![radius_of_curvature_formula](https://github.com/leovantoji/sdce/blob/master/images/radius_of_curvature_formula.png)
+  
 - We need to convert from pixels to real-world metre measurements.
   ```python
   # define conversions in x and y from pixels space to meters
@@ -369,8 +373,240 @@
   right_curverad = (1+(2*y_eval*right_fit_cr[0]*ym_per_pix + right_fit_cr[1])**2)**(1.5) / np.absolute(2*right_fit_cr[0])
   ```
 
+## Tensorflow 1.x
+- `tf.placeholder()` returns a tensor that gets its value from data passed to the `tf.session.run()` function, allowing you to set the input right before the session runs. `feed_dict` parameter in `tf.session.run()` is used to set the placeholder tensor.
+  ```python
+  x = tf.placeholder(tf.string)
+  y = tf.placeholder(tf.int32)
+  z = tf.placeholder(tf.float32)
+  
+  with tf.Session() as sess:
+      output = sess.run(x, feed_dict={x: 'Test string', y: 123, z: 1.0})
+  ```
+- Basic Math functions:
+  ```python
+  x = tf.add(5, 2) # 7
+  x = tf.subtract(10, 4) # 6
+  x = tf.multiply(2, 5) # 10
+  ```
+- It may be necessary to convert between types to make certain operators work together.
+  ```python
+  # No conversion
+  tf.subtract(tf.constant(2.0), tf.constant(1)) # Fails with ValueError: Tensor conversion requested dtype float32 for Tensor with dtype int32:
+  
+  # After conversion
+  tf.subtract(tf.cast(tf.constant(2.0), tf.int32), tf.constant(1)) # 1
+  ```
+- `tf.Variable` class creates a tensor with an initial value that can be modified, much like a normal Python variable. This tensor stores its state in the session, so you must initialise the state of the tensor manually. The `tf.global_variables_initializer()` function is used to initialise the state of all the Variable tensors and returns an operation that will initialise all TensorFlow variables from the graph. Using the `tf.Variable` class allows us to change the weights and bias, but an initial value needs to be chosen. 
+  ```python
+  init = tf.global_variables_initializer()
+  with tf.Session() as sess:
+      sess.run(init)
+  ```
+- The **weights** are often initialised as **random numbers from a normal distribution**. The `tf.truncated_normal()` function returns a tensor with random values from a normal distribution whose magnitude is no more than 2 standard deviations from the mean.
+  ```python
+  # weight initialisation
+  n_features = 120
+  n_labels = 5
+  weights = tf.Variable(tf.truncated_normal((n_features, n_labels)))
+  ```
+- The bias doesn't need to be randomised. The `tf.zeros()` function returns a tensor with all zeros.
+  ```python
+  n_labels = 5
+  bias = tf.Variable(tf.zeros(n_labels))
+  ```
+- Example of `tf.nn.softmax`:
+  ```python
+  logit_data = [2.0, 1.0, 0.1]
+  logits = tf.placeholder(tf.float32)
+  softmax = tf.nn.softmax(logits)
+  
+  with tf.Session() as sess:
+      output = sess.run(softmax, feed_dict={logits: logit_data})
+      print(output)
+  ```
+- **Mini-batching** is a technique for **training on subsets of the dataset** instead of all the data at one time. This provides the **ability to train a model**, even if a computer **lacks the memory to store the entire dataset**. However, this technique is **computationally inefficient** since you can't calculate the loss simultaneously across all samples. 
+- **Mini-batching** could be quite useful when combined with SGD. The idea is to randomly shuffle the data at the start of each epoch, then create the mini-batches. For each mini-batch, you train the network weights with gradient descent. Since these batches are random, you're performing SGD with each batch.
+- **Mini-batching** in Tensorflow.
+  ```python
+  def batches(batch_size=1, features, labels):
+      assert len(features) == len(labels), 'Invalid size!'
+      
+      output = []
+      for i in range(0, len(features), batch_size):
+          output.append((features[i:(i+batch_size)], labels[i:(i+batch_size)]))
+      
+      return output
+  
+  train_features = mnist.train.images
+  test_features = mnist.test.images
+  
+  train_labels = mnist.train.labels.astype(np.float32)
+  test_labels = mnist.test.labels.astype(np.float32)
+  
+  features = tf.placeholder(tf.float32, [None, n_input])
+  labels = tf.placeholder(tf.float32, [None, n_classes])
+  
+  batch_size = 128
+  with tf.Session() as sess:
+      sess.run(tf.global_variables_initializer())
+    
+      # Train optimizer on all batches
+      for batch_features, batch_labels in batches(batch_size, train_features, train_labels):
+          sess.run(optimizer, feed_dict={features: batch_features, labels: batch_labels})
 
+      # Calculate accuracy for test dataset
+      test_accuracy = sess.run(accuracy, feed_dict={features: test_features, labels: test_labels})
 
+  print('Test Accuracy: {}'.format(test_accuracy))
+  ```
+- An **epoch** is a **single forward and backward pass** of the whole dataset. This is used to increase the accuracy of the model without requiring more data.
+  ```python
+  batch_size = 128
+  epochs = 10
+  learn_rate = 0.001
+
+  with tf.Session() as sess:
+      sess.run(tf.global_variables_initializer())
+
+      # Training cycle
+      for epoch_i in range(epochs):
+
+          # Loop over all batches
+          for batch_features, batch_labels in batches(batch_size, train_features, train_labels):
+              train_feed_dict = {
+                  features: batch_features,
+                  labels: batch_labels,
+                  learning_rate: learn_rate}
+              sess.run(optimizer, feed_dict=train_feed_dict)
+
+          # Print cost and validation accuracy of an epoch
+          print_epoch_stats(epoch_i, sess, batch_features, batch_labels)
+
+      # Calculate accuracy for test dataset
+      test_accuracy = sess.run(
+          accuracy,
+          feed_dict={features: test_features, labels: test_labels})
+  ```
+- The `tf.train.Saver` class allows you to save any `tf.Variable` in your file system.
+  ```python
+  # file path to save data
+  save_file = './model.ckpt'
+  
+  # Tensor variable(s) to be saved
+  weights = tf.Variable(tf.truncated_normal([2, 3]))
+  
+  # class used to save and/or restore Tensor variable(s)
+  saver = tf.train.Saver()
+  
+  with tf.Session() as session:
+      session.run(tf.global_variables_initializer())
+      session.run(weights)
+      
+      # save the model
+      saver.save(session, save_file)
+  ```
+- Load data previously saved with `tf.train.Saver` back to a new model.
+  ```python
+  # remove the previous weights
+  tf.reset_default_graph()
+  
+  # Tensor variable(s) to be restored to
+  weights = tf.Variable(tf.truncated_normal([2, 3]))
+  
+  # class used to save and/or restore Tensor variable(s)
+  saver = tf.train.Saver()
+  
+  with tf.Session() as session:
+      # load saved Tensor variable(s)
+      saver.restore(session, save_file)
+      session.run(weights)
+  ```
+- TensorFlow uses a string identifier for Tensors and Operations called `name`. If a name is not given, TensorFlow will create one automatically. TensorFlow will give the first node the name `<Type>`, and then give the name `<Type>_<number>` for the subsequent nodes. Therefore, it's important to set `name` property manually instead of letting TensorFlow does it.
+  - **Erroneous** way: `InvalidArgumentError (see above for traceback): Assign requires shapes of both tensors to match.`
+  ```python  
+  # Tensor variable(s) to be incorrectly saved
+  weights = tf.Variable(tf.truncated_normal([2, 3])) # name = Variable
+  biases = tf.Variable(tf.truncated_normal([3])) # name = Variable_1
+  
+  ############################
+  # SAVED weights and biases #
+  ############################
+  tf.reset_default_graph()
+  
+  # Tensor variable(s) to be incorrectly restored to
+  biases = tf.Variable(tf.truncated_normal([3])) # name = Variable
+  weights = tf.Variable(tf.truncated_normal([2, 3])) # name = Variable_1
+  
+  saver = tf.train.Saver()
+  
+  with tf.Session() as session:
+      # load the weights and bias - ERROR
+      saver.restore(session, save_file)
+  ```
+  - **Correct** way:
+  ```python
+  # Tensor variable(s) to be correctly saved
+  weights = tf.Variable(tf.truncated_normal([2, 3]), name='weights_0')
+  biases = tf.Variable(tf.truncated_normal([3]), name='bias_0')
+  
+  ############################
+  # SAVED weights and biases #
+  ############################
+  
+  tf.reset_default_graph()
+  # Tensor variable(s) to be incorrectly restored to
+  biases = tf.Variable(tf.truncated_normal([3]), name='bias_0')
+  weights = tf.Variable(tf.truncated_normal([2, 3]), name='weights_0')
+  
+  saver = tf.train.Saver()
+  
+  with tf.Session() as session:
+      # load the weights and bias - SUCCESSFUL
+      saver.restore(session, save_file)
+  ```
+- **Dropout** is a **regularisation technique** to **reduce overfitting**. The technique temporarily drops units from the network, along with all of those units incoming and outgoing connections. The `tf.nn.dropout()` function can be used to implement dropout in TensorFlow.
+  - During training, good starting value for `keep_prob` is `0.5`.
+  - During testing, `keep_prob` should be set to `1.0` to keep all units and maximise the power of the model.
+  ```python
+  keep_prob = tf.placeholder(tf.float32) # probability to keep units
+  
+  hidden_layer = tf.add(tf.matmul(features, weights[0]), biases[0])
+  hidden_layer = tf.nn.relu(hidden_layer)
+  hidden_layer = tf.nn.dropout(hidden_layer, keep_prob)
+  
+  logits = tf.add(tf.matmul(hidden_layer, weights[1]), biases[1])
+  ```
+- **ConvNet**'s general idea is to **progressively squeeze** the spacial dimension while **increasing the depth** which corresponds roughly to the semantic expression of your representation.  
+  ![CovNet](https://github.com/leovantoji/sdce/blob/master/images/CovNet.png)
+- CNN learns to **recognise basic lines and curves**, then shapes and blobs, and then **increasingly complex objects** within the image. Finally, the CNN classifies the image by combining the larger, more complex objects.  
+  ![hierarchy-diagram](https://github.com/leovantoji/sdce/blob/master/images/hierarchy-diagram.jpg)
+- An example: Given input shape of `32x32x3` (HxWxD), `20` filters of shape `8x8x3` (HxWxD), a stride of `2` for both height and width, and padding size of `1`. 
+  - The output will have shape of `14x14x20`.
+  - Without parameter sharing, since each neuron in an output layer must connect to each neuron in the filter and a single bias neuron, the convolutional layer has `756560` (`(8x8x3 + 1) x 14x14x20`) parameters.
+  - With parameter sharing, since each neuron in an output channel shares its weights with every other neuron in that channel, the convolutional layer has `3860` (`(8x8x3 + 1) x 20`) parameters.
+- CNN in TensorFlow.
+  ```python
+  input = tf.placeholder(tf.float32, (None, 32, 32, 3)) # image 32x32x3. None is batch.
+  filter_weights = tf.Variable(tf.truncated_normal((8, 8, 3, 20)) # height, width, input_depth, output_depth/no_of_filters
+  filter_bias = tf.Variable(tf.zeros(20))
+  strides = [1, 2, 2, 1] # (batch, height, width, depth)
+  padding = 'SAME'
+  conv = tf.nn.conv2d(input, filter_weights, strides, padding) + filter_bias
+  ```
+- TensorFlow uses the following equations for `SAME` and `VALID` padding respectively.
+  ```python
+  # SAME padding
+  out_height = ceil(float(in_height)/float(strides[1]))
+  out_width = ceil(float(in_width)/float(strides[2]))
+  
+  # VALID padding
+  out_height = ceil(float(in_height - filter_height + 1)/float(strides[1]))
+  out_width = ceil(float(in_width - filter_width + 1)/float(strides[2]))
+  ```
+  
+  
+  
 
 
 
