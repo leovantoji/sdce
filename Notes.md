@@ -585,26 +585,139 @@
   - The output will have shape of `14x14x20`.
   - Without parameter sharing, since each neuron in an output layer must connect to each neuron in the filter and a single bias neuron, the convolutional layer has `756560` (`(8x8x3 + 1) x 14x14x20`) parameters.
   - With parameter sharing, since each neuron in an output channel shares its weights with every other neuron in that channel, the convolutional layer has `3860` (`(8x8x3 + 1) x 20`) parameters.
-- CNN in TensorFlow.
-  ```python
-  input = tf.placeholder(tf.float32, (None, 32, 32, 3)) # image 32x32x3. None is batch.
-  filter_weights = tf.Variable(tf.truncated_normal((8, 8, 3, 20)) # height, width, input_depth, output_depth/no_of_filters
-  filter_bias = tf.Variable(tf.zeros(20))
-  strides = [1, 2, 2, 1] # (batch, height, width, depth)
-  padding = 'SAME'
-  conv = tf.nn.conv2d(input, filter_weights, strides, padding) + filter_bias
-  ```
 - TensorFlow uses the following equations for `SAME` and `VALID` padding respectively.
   ```python
   # SAME padding
-  out_height = ceil(float(in_height)/float(strides[1]))
-  out_width = ceil(float(in_width)/float(strides[2]))
+  out_height = ceil(float(image_height)/float(strides[1]))
+  out_width = ceil(float(image_width)/float(strides[2]))
   
   # VALID padding
-  out_height = ceil(float(in_height - filter_height + 1)/float(strides[1]))
-  out_width = ceil(float(in_width - filter_width + 1)/float(strides[2]))
+  out_height = ceil(float(image_height - filter_height + 1)/float(strides[1]))
+  out_width = ceil(float(image_width - filter_width + 1)/float(strides[2]))
   ```
-  
+- The **benefit of the max pooling operation** is to **reduce the size of the output**, **prevent overfitting**, and **allow the neural network to focus on only the most important elements**. Max pooling does this by only retaining the maximum value for each filtered area, and removing the remaining value. TensorFlow provides the `tf.nn.max_pool()` function to apply max pooling to your convolutional layers.  
+  ![max-pooling](https://github.com/leovantoji/sdce/blob/master/images/max-pooling.png)
+- Some **reasons not to use pooling layers** are.
+  - Datasets are so big and complex, so we are more concerned about underfitting.
+  - Dropout is a much better regularizer.
+  - Pooling results in a loss of information.
+- `1x1` convolution layer bettween a traditional convolutional layer setting provides a mini neural network running over the patch instead of a linear classifier (i.e. traditional convolutional layer). Interpersing the convolutional layers with `1x1` convolutions is a very inexpensive way to make the model deeper and have more parameters without completing changing the structure of the model. 
+  ![1_by_1_conv](https://github.com/leovantoji/sdce/blob/master/images/1_by_1_conv.png)
+- Inception module includes a composition of average pooling followed by `1x1`, a `1x1`, a `1x1` followed by `3x3`, and a `1x1` followed by `5x5`. There's a way to choose the parameters such that the total number of model parameters is very small. Nonetheless, the model becomes a lot more powerful than the model with only a simple convolution.
+  ![inception_module](https://github.com/leovantoji/sdce/blob/master/images/inception_module.png)
+- Below is an example of CNN implementation in TensorFlow 1.x. More examples can be found [here](https://github.com/aymericdamien/TensorFlow-Examples).
+  ```python
+  # layers of weights and biases
+  from tensorflow.examples.tutorials.mnist import input_data
+  mnist = input_data.read_data_sets(".", one_hot=True, reshape=False)
+
+  import tensorflow as tf
+
+  # Parameters
+  learning_rate = 0.00001
+  epochs = 10
+  batch_size = 128
+
+  # Number of samples to calculate validation and accuracy
+  # Decrease this if you're running out of memory to calculate accuracy
+  test_valid_size = 256
+
+  # Network Parameters
+  n_classes = 10  # MNIST total classes (0-9 digits)
+  dropout = 0.75  # Dropout, probability to keep units
+
+  weights = {
+      'wc1': tf.Variable(tf.random_normal([5, 5, 1, 32])),
+      'wc2': tf.Variable(tf.random_normal([5, 5, 32, 64])),
+      'wd1': tf.Variable(tf.random_normal([7*7*64, 1024])),
+      'out': tf.Variable(tf.random_normal([1024, n_classes]))
+  }
+
+  biases = {
+      'bc1': tf.Variable(tf.random_normal([32])),
+      'bc2': tf.Variable(tf.random_normal([64])),
+      'bd1': tf.Variable(tf.random_normal([1024])),
+      'out': tf.Variable(tf.random_normal([n_classes]))
+  }
+
+  def conv2d(x, W, bias, strides=1, padding='SAME'):
+      x = tf.nn.conv2d(x, W, strides=[1, strides, strides, 1], padding=padding)
+      x = tf.nn.bias_add(x, bias)
+      return tf.nn.relu(x)
+
+  def maxpool2d(x, k=2, padding='SAME'):
+      return tf.nn.max_pool(x, ksize=[1, k, k, 1], strides=[1, k, k, 1], padding=padding)
+
+  def conv_net(x, weights, biases, dropout):
+      # layer 1 - 28x28x1 to 14x14x32
+      conv1 = conv2d(x, weights['wc1'], biases['bc1'])
+      conv1 = maxpool2d(conv1, k=2)
+
+      # layer 2 - 14x14x32 to 7x7x64
+      conv2 = conv2d(conv1, weights['wc2'], biases['bc2'])
+      conv2 = maxpool2d(conv2, k=2)
+
+      # fully connected layer - 7x7x64 to 1024
+      fc1 = tf.reshape(conv2, [-1, weights['wd1'].get_shape().as_list()[0]])
+      fc1 = tf.add(tf.matmul(fc1, weights['wd1']), biases['bd1'])
+      fc1 = tf.nn.relu(fc1)
+      fc1 = tf.nn.dropout(fc1, dropout)
+
+      # output layer
+      out = tf.add(tf.matmul(fc1, weights['out']), biases['out'])
+      return out
+
+  # tf graph input
+  x = tf.placeholder(tf.float32, [None, 28, 28, 1])
+  y = tf.placeholder(tf.float32, [None, n_classes])
+  keep_prob = tf.placeholder(tf.float32)
+
+  # model
+  logits = conv_net(x, weights, biases, keep_prob)
+
+  # loss and optimiser
+  cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=logits, labels=y))
+  optimizer = tf.train.GradientDescentOptimizer(learning_rate=learning_rate).minimize(cost)
+
+  # accuracy
+  correct_pred = tf.equal(tf.argmax(logits, 1), tf.argmax(y, 1))
+  accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
+
+  # launch the graph
+  with tf.Session() as session:
+      session.run(tf.global_variables_initializer())
+
+      for epoch in range(epochs):
+          for batch in range(mnist.train.num_examples/batch_size):
+              batch_x, batch_y = mnist.train.next_batch(batch_size)
+              session.run(optimizer, feed_dict={
+                  x: batch_x,
+                  y: batch_y,
+                  keep_prob: dropout
+              })
+
+              # calculate batch loss and accuracy
+              loss = session.run(cost, feed_dict={
+                  x: batch_x,
+                  y: batch_y,
+                  keep_prob: 1.0
+              })
+              valid_acc = session.run(accuracy, feed_dict={
+                  x: mnist.validation.images[:test_valid_size],
+                  y: mnist.validation.labels[:test_valid_size],
+                  keep_prob: 1.0
+              })
+
+              print(f'Epoch {epoch+1:>2}, Batch {batch+1:>3} - Loss: {loss:>10.4f} Valid Acc: {valid_acc:.6f}')
+
+      # calculate test accuracy
+      test_acc = session.run(accuracy, feed_dict={
+          x: mnist.test.images[:test_valid_size],
+          y: mnist.test.labels[:test_valid_size],
+          keep_prob: 1.0
+      })
+      print(f'Testing Accuracy: {test_acc:.2f}')
+  ```
   
   
 
