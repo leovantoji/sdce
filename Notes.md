@@ -752,7 +752,6 @@
   history = model.fit(X_normalized, y_one_hot, epochs=20, validation_split=0.2)
   
   # evaluate model
-  # evaluate model against the test data
   with open('small_test_traffic.p', 'rb') as f:
       data_test = pickle.load(f)
 
@@ -773,6 +772,11 @@
   ```
 
 ## Transfer learning
+- GPU vs. CPU.  
+  ![gpu_vs_cpu](https://github.com/leovantoji/sdce/blob/master/images/gpu_vs_cpu.png)
+- [My notes about transfer learning](https://github.com/leovantoji/Machine-Learning-Engineer-Nanodegree/blob/master/Term_2_Notes.md)
+- Four main cases of transfer learning:  
+  ![02-guide-how-transfer-learning-v3-01](https://github.com/leovantoji/sdce/blob/master/images/02-guide-how-transfer-learning-v3-01.png)
 
 
 
