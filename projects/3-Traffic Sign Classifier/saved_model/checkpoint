@@ -1,0 +1,2 @@
+model_checkpoint_path: "TSC_processed_simple.ckpt"
+all_model_checkpoint_paths: "TSC_processed_simple.ckpt"
