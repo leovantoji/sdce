@@ -1,7 +1,5 @@
-# **Traffic Sign Recognition** 
-
-### Writeup
----
+# Traffic Sign Recognition
+[![Udacity - Self-Driving Car NanoDegree](https://s3.amazonaws.com/udacity-sdc/github/shield-carnd.svg)](http://www.udacity.com/drive)
 
 The major steps of this project are the following:
 * Load the data set (see below for links to the project data set)
