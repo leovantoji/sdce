@@ -105,7 +105,15 @@ In order to improve the model, I tried to add a few additional dropout layers to
 
 Here are five German traffic signs that I found on the web:
 
-![General caution][image6] ![Bumpy road][image4] ![Speed limit (100 km/h)][image5] ![Roundabout][image8] ![Road work][image7]
+![General caution][image6] 
+
+![Bumpy road][image4] 
+
+![Speed limit (100 km/h)][image5] 
+
+![Roundabout][image8] 
+
+![Road work][image7]
 
 All images are of good quality and bright in colours. This could prove to be a challenge since the training dataset contains lots of dark images. Nonetheless, the grayscale transformation was there to address this issue of varying lighting conditions.
 
