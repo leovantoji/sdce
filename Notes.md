@@ -719,8 +719,60 @@
       print(f'Testing Accuracy: {test_acc:.2f}')
   ```
   
+## Keras
+- The `keras.models.Sequential` class is a **wrapper for the neural network model**. It provides common functions like `fit()`, `evaluate()` and `compile()`.
+- A Keras layer is just like a neural network layer. There are fully connected layers, max pool layers, and activation layers. You can add a layer to the model using the `add()` function. Keras will **automatically infer the shape** of all layers after the first layer.
+  ```python
+  from keras.models import Sequential
+  from keras.layers.core import Dense, Activation, Flatten, Dropout
+  from keras.layers.convolutional import Conv2D
+  from keras.layers.pooling import MaxPooling2D
   
+  # define model architecture
+  model = Sequential()
+  model.add(Conv2D(filters=32, kernel_size=3, activation='relu', input_shape=(32, 32, 3)))
+  model.add(MaxPooling2D(pool_size=2))
+  model.add(Dropout(0.5))
+  model.add(Flatten())
+  model.add(Dense(128, activation='relu'))
+  model.add(Dense(5, activation='softmax'))
+  
+  # view model summary
+  model.summary()
+  
+  # preprocess data
+  X_normalized = np.array(X_train / 255.0 - 0.5 )
 
+  from sklearn.preprocessing import LabelBinarizer
+  label_binarizer = LabelBinarizer()
+  y_one_hot = label_binarizer.fit_transform(y_train)
+  
+  # compile and fit the model
+  model.compile('adam', 'categorical_crossentropy', ['accuracy'])
+  history = model.fit(X_normalized, y_one_hot, epochs=20, validation_split=0.2)
+  
+  # evaluate model
+  # evaluate model against the test data
+  with open('small_test_traffic.p', 'rb') as f:
+      data_test = pickle.load(f)
+
+  X_test = data_test['features']
+  y_test = data_test['labels']
+
+  # preprocess data
+  X_normalized_test = np.array(X_test / 255.0 - 0.5 )
+  y_one_hot_test = label_binarizer.fit_transform(y_test)
+
+  print("Testing")
+
+  metrics = model.evaluate(X_normalized_test, y_one_hot_test)
+  for metric_i in range(len(model.metrics_names)):
+      metric_name = model.metrics_names[metric_i]
+      metric_value = metrics[metric_i]
+      print(f'{metric_name}: {metric_value}')
+  ```
+
+## Transfer learning
 
 
 
